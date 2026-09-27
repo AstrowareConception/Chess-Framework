@@ -36,14 +36,28 @@ class ReferenceEloCatalogTest {
             ratings.stream()
                 .min(Integer::compareTo)
                 .orElseThrow()
-                >= 800
+                >= 1_300
         );
 
         assertTrue(
             ratings.stream()
                 .max(Integer::compareTo)
                 .orElseThrow()
-                <= 1_200
+                <= 1_700
+        );
+
+        assertEquals(
+            1_340,
+            ReferenceEloCatalog.find("random")
+                .orElseThrow()
+                .rating()
+        );
+
+        assertEquals(
+            1_652,
+            ReferenceEloCatalog.find("lookahead")
+                .orElseThrow()
+                .rating()
         );
 
         assertTrue(
