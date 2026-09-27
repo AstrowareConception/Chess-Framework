@@ -73,7 +73,7 @@ public final class BotEloEstimateReporter {
 
         out.printf(
             Locale.ROOT,
-            "Score            : %.1f / %d (%.1f %%%%)%n%n",
+            "Score            : %.1f / %d (%.1f %%)%n%n",
             estimate.points(),
             estimate.games(),
             estimate.scoreRate() * 100.0
