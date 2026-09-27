@@ -1,6 +1,10 @@
 name: Elo Benchmark
 
 on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/elo-benchmark.yml'
   workflow_dispatch:
     inputs:
       population:
@@ -51,6 +55,14 @@ jobs:
     name: Dynamic IRIS-Elo benchmark
     runs-on: ubuntu-latest
     timeout-minutes: 180
+    env:
+      ELO_POPULATION: ${{ inputs.population || 'reference' }}
+      ELO_GAMES_PER_PAIR: ${{ inputs.games_per_pair || '4' }}
+      ELO_INITIAL: ${{ inputs.initial_elo || '1000' }}
+      ELO_K: ${{ inputs.k_factor || '24' }}
+      ELO_SEED: ${{ inputs.seed || '42' }}
+      ELO_MAX_PLIES: ${{ inputs.max_plies || '400' }}
+      ELO_ISOLATED: ${{ inputs.isolated || 'false' }}
 
     steps:
       - name: Checkout
@@ -72,7 +84,7 @@ jobs:
           set -euo pipefail
 
           POPULATION=""
-          case "${{ inputs.population }}" in
+          case "$ELO_POPULATION" in
             reference)
               POPULATION=""
               ;;
@@ -83,17 +95,27 @@ jobs:
               POPULATION="--all"
               ;;
             *)
-              echo "Population inconnue : ${{ inputs.population }}"
+              echo "Population inconnue : $ELO_POPULATION"
               exit 2
               ;;
           esac
 
           ISOLATION=""
-          if [[ "${{ inputs.isolated }}" == "true" ]]; then
+          if [[ "$ELO_ISOLATED" == "true" ]]; then
             ISOLATION="--isolated"
           fi
 
-          bash scripts/chess.sh elo-benchmark             $POPULATION             --games="${{ inputs.games_per_pair }}"             --initial-elo="${{ inputs.initial_elo }}"             --k="${{ inputs.k_factor }}"             --seed="${{ inputs.seed }}"             --max-plies="${{ inputs.max_plies }}"             $ISOLATION             --csv=elo-final.csv             --history=elo-history.csv             | tee elo-benchmark.log
+          bash scripts/chess.sh elo-benchmark \
+            $POPULATION \
+            --games="$ELO_GAMES_PER_PAIR" \
+            --initial-elo="$ELO_INITIAL" \
+            --k="$ELO_K" \
+            --seed="$ELO_SEED" \
+            --max-plies="$ELO_MAX_PLIES" \
+            $ISOLATION \
+            --csv=elo-final.csv \
+            --history=elo-history.csv \
+            | tee elo-benchmark.log
 
       - name: Show final ranking
         if: always()
@@ -111,7 +133,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: iris-elo-${{ inputs.population }}-${{ github.run_number }}
+          name: iris-elo-${{ env.ELO_POPULATION }}-${{ github.run_number }}
           if-no-files-found: error
           retention-days: 90
           path: |
