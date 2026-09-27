@@ -159,6 +159,7 @@ Il obtient alors un bot au comportement différent sans réécrire le moteur.
 - [Dépannage étudiant](docs/TROUBLESHOOTING.md)
 - [Checklist V1 — prêt étudiant](docs/STUDENT_READY_CHECKLIST.md)
 - [Procédure de gel du framework](docs/FRAMEWORK_FREEZE.md)
+- [Benchmark IRIS-Elo dynamique](docs/ELO_BENCHMARK.md)
 - [Spécifications fonctionnelles et pédagogiques](docs/SPECIFICATIONS.md)
 - [Architecture cible](docs/ARCHITECTURE.md)
 - [Évaluation des positions et des coups](docs/EVALUATION.md)
@@ -289,3 +290,16 @@ bash scripts/chess.sh tournament positional lookahead minimax --games=2 --isolat
 ```
 
 En mode isolé, chaque bot tourne dans une JVM enfant. Une décision qui dépasse le timeout provoque un forfait sans bloquer le tournoi.
+
+
+### Benchmark IRIS-Elo dynamique
+
+Les bots peuvent être calibrés empiriquement par plusieurs centaines de parties :
+
+```bash
+bash scripts/chess.sh elo-benchmark --games=4 --csv=elo-final.csv --history=elo-history.csv
+```
+
+Avec 12 bots de référence et 4 parties par paire, le benchmark joue **264 parties** avec couleurs équilibrées et met à jour l'Elo après chaque match.
+
+Voir [docs/ELO_BENCHMARK.md](docs/ELO_BENCHMARK.md).
