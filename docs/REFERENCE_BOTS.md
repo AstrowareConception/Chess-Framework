@@ -31,6 +31,8 @@ Les valeurs sont **provisoires**. Le framework possède maintenant un benchmark 
 
 Voir `docs/ELO_BENCHMARK.md`.
 
+La première campagne réelle de 264 parties est archivée dans `docs/calibrations/IRIS_ELO_REFERENCE_2026-09-27_SEED42.md`.
+
 ---
 
 Les bots fournis servent à la fois d'adversaires et d'exemples pédagogiques contrastés.
