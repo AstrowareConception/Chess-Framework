@@ -107,6 +107,15 @@ jobs:
           grep -q "CI Smoke" /tmp/iris-students.csv
           grep -q "CI Second" /tmp/iris-students.csv
 
+      - name: Smoke-test Elo benchmark CLI
+        run: |
+          bash scripts/chess.sh elo-benchmark random greedy --games=2 --max-plies=4 --seed=123 --csv=/tmp/elo-smoke.csv --history=/tmp/elo-smoke-history.csv
+          test -s /tmp/elo-smoke.csv
+          test -s /tmp/elo-smoke-history.csv
+          grep -q "random" /tmp/elo-smoke.csv
+          grep -q "greedy" /tmp/elo-smoke.csv
+          grep -q "white_elo_before" /tmp/elo-smoke-history.csv
+
   student-workflow-windows:
     name: Student workflow — Windows
     runs-on: windows-latest
