@@ -918,10 +918,10 @@ public final class ChessFrameworkCli {
 
     private static void printRatings() {
         System.out.println(
-            "IRIS-Elo provisoire des bots de référence"
+            "IRIS-Elo calibré des bots de référence"
         );
         System.out.println(
-            "(échelle pédagogique interne, sans équivalence FIDE)"
+            "(calibration empirique interne, sans équivalence FIDE)"
         );
         System.out.println();
 
