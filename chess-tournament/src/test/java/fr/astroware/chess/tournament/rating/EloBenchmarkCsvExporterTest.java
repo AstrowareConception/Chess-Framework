@@ -44,9 +44,14 @@ class EloBenchmarkCsvExporterTest {
             )
         );
 
+        String quote =
+            Character.toString('"');
+
         assertTrue(
             standings.contains(
-                ""alpha""
+                quote
+                    + "alpha"
+                    + quote
             )
         );
 
@@ -64,7 +69,9 @@ class EloBenchmarkCsvExporterTest {
 
         assertTrue(
             history.contains(
-                ""beta""
+                quote
+                    + "beta"
+                    + quote
             )
         );
     }
