@@ -42,6 +42,27 @@ class EloBenchmarkTest {
     }
 
     @Test
+    void translationOfAllRatingsPreservesExpectedProbabilities() {
+        double around1000 =
+            EloBenchmark.expectedScore(
+                1_200.0,
+                1_000.0
+            );
+
+        double around1500 =
+            EloBenchmark.expectedScore(
+                1_700.0,
+                1_500.0
+            );
+
+        assertEquals(
+            around1000,
+            around1500,
+            1.0e-12
+        );
+    }
+
+    @Test
     void higherRatingHasHigherExpectedScore() {
         double expected =
             EloBenchmark.expectedScore(
@@ -168,6 +189,74 @@ class EloBenchmarkTest {
         assertEquals(
             standingSignature(first),
             standingSignature(second)
+        );
+    }
+
+    @Test
+    void canResumeFromRatingsProducedByPreviousCampaign() {
+        EloBenchmarkSettings settings =
+            new EloBenchmarkSettings(
+                1_500.0,
+                24.0,
+                2,
+                10,
+                424242L
+            );
+
+        EloBenchmark benchmark =
+            new EloBenchmark();
+
+        EloBenchmarkResult first =
+            benchmark.run(
+                participants(),
+                settings
+            );
+
+        java.util.Map<String, Double> resume =
+            first.standings().stream()
+                .collect(
+                    java.util.stream.Collectors.toMap(
+                        EloStanding::key,
+                        EloStanding::rating
+                    )
+                );
+
+        EloBenchmarkResult second =
+            benchmark.run(
+                participants(),
+                settings,
+                resume,
+                ignored -> {
+                }
+            );
+
+        EloMatchRecord firstGame =
+            second.history().getFirst();
+
+        assertEquals(
+            resume.get(
+                firstGame.whiteKey()
+            ),
+            firstGame.whiteRatingBefore(),
+            1.0e-9
+        );
+
+        assertEquals(
+            resume.get(
+                firstGame.blackKey()
+            ),
+            firstGame.blackRatingBefore(),
+            1.0e-9
+        );
+
+        assertEquals(
+            3_000.0,
+            second.standings().stream()
+                .mapToDouble(
+                    EloStanding::rating
+                )
+                .sum(),
+            1.0e-9
         );
     }
 
