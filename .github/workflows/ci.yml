@@ -116,6 +116,14 @@ jobs:
           grep -q "greedy" /tmp/elo-smoke.csv
           grep -q "white_elo_before" /tmp/elo-smoke-history.csv
 
+      - name: Smoke-test individual Elo estimate
+        run: |
+          bash scripts/chess.sh elo-estimate student-ci-smoke --refs=random,greedy --games=2 --max-plies=4 --seed=456 --timeout-ms=2000 --heap-mb=128 --csv=/tmp/student-elo-estimate.csv | tee /tmp/student-elo-estimate.txt
+          test -s /tmp/student-elo-estimate.csv
+          grep -q "IRIS-Elo estimé" /tmp/student-elo-estimate.txt
+          grep -q "estimated_elo" /tmp/student-elo-estimate.csv
+          grep -q "student-ci-smoke" /tmp/student-elo-estimate.csv
+
   student-workflow-windows:
     name: Student workflow — Windows
     runs-on: windows-latest
