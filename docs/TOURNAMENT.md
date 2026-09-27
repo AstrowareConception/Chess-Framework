@@ -510,3 +510,48 @@ La CI vérifie cette propriété :
 - sur un tournoi toutes rondes.
 
 Les temps de décision ne participent pas aux départages afin de ne pas introduire de dépendance à la vitesse de la machine.
+
+
+---
+
+## 19. Benchmark Elo dynamique
+
+Le classement toutes rondes officiel et le classement Elo répondent à deux usages différents.
+
+### Classement du tournoi
+
+```text
+victoire = 1
+nulle    = 0,5
+défaite  = 0
+```
+
+Il produit le classement de l'événement.
+
+### IRIS-Elo dynamique
+
+Après **chaque partie**, l'Elo des deux bots est recalculé selon leur résultat et leur score attendu.
+
+Exemple sur les références :
+
+```bash
+bash scripts/chess.sh elo-benchmark --games=4
+```
+
+Avec 12 références :
+
+```text
+66 paires × 4 parties = 264 parties
+```
+
+Les couleurs sont parfaitement équilibrées.
+
+Pour le tournoi IRIS Nice, un benchmark mixte après clôture peut situer les étudiants par rapport aux références :
+
+```bash
+bash scripts/chess.sh elo-benchmark --all --games=4 --isolated
+```
+
+Le classement Elo est donc une **mesure complémentaire**, et non un remplacement du classement officiel.
+
+Voir `docs/ELO_BENCHMARK.md`.
