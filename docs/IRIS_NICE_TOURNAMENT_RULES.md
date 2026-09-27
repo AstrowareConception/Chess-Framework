@@ -194,7 +194,9 @@ Sont interdits dans une soumission :
 
 Les contrôles automatiques de PR détectent les usages évidents de ces API.
 
-Pendant le tournoi, chaque bot est exécuté dans une **JVM enfant isolée** avec timeout et plafond mémoire.
+Pendant le tournoi, chaque bot étudiant est exécuté dans une **JVM enfant isolée** avec timeout et plafond mémoire.
+
+L'isolation est forcée automatiquement dès que le CLI détecte un participant `student-*` ou le mode `--students`. Le flag `--isolated` peut toujours être écrit explicitement dans la commande officielle, mais son oubli ne désactive pas cette protection.
 
 ---
 
