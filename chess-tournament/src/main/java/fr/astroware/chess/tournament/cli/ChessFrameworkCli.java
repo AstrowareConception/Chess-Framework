@@ -145,24 +145,42 @@ public final class ChessFrameworkCli {
             );
         }
 
-        Map<String, BotFactory> source;
+        List<String> requestedBots =
+            tournamentBotNames(args);
+
+        List<String> keys;
 
         if (studentsOnly) {
-            source = BotCatalog.studentBots();
+            keys = new ArrayList<>(
+                BotCatalog.studentBots()
+                    .keySet()
+            );
 
-            if (source.size() < 2) {
+            if (keys.size() < 2) {
                 throw new IllegalArgumentException(
                     "Le benchmark étudiant nécessite au moins deux bots étudiants mergés."
                 );
             }
         } else if (all) {
-            source = BotCatalog.all();
-        } else {
-            source = BotCatalog.referenceBots();
-        }
+            keys = new ArrayList<>(
+                BotCatalog.all().keySet()
+            );
+        } else if (!requestedBots.isEmpty()) {
+            if (requestedBots.size() < 2) {
+                throw new IllegalArgumentException(
+                    "Un benchmark Elo explicite nécessite au moins deux bots."
+                );
+            }
 
-        List<String> keys =
-            new ArrayList<>(source.keySet());
+            keys = new ArrayList<>(
+                requestedBots
+            );
+        } else {
+            keys = new ArrayList<>(
+                BotCatalog.referenceBots()
+                    .keySet()
+            );
+        }
 
         keys.sort(String::compareTo);
 
@@ -944,7 +962,7 @@ public final class ChessFrameworkCli {
             Usage :
               list
               ratings
-              elo-benchmark [--students|--all] [options]
+              elo-benchmark [bot1 bot2 ...] [--students|--all] [options]
               validate-students
               console <blancs> <noirs> [options]
               pgn     <blancs> <noirs> [fichier.pgn] [options]
@@ -986,6 +1004,7 @@ public final class ChessFrameworkCli {
               tournament --students --games=4 --isolated
               tournament --all --games=2 --isolated --timeout-ms=3000
               elo-benchmark --games=4 --csv=elo.csv --history=elo-history.csv
+              elo-benchmark random greedy tactical --games=8
               elo-benchmark --students --games=8 --isolated
               tournament tactical positional --pgn=parties.pgn --csv=classement.csv
 
