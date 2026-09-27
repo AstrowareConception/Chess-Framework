@@ -5,6 +5,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+$utf8 = [System.Text.UTF8Encoding]::new($false)
+[Console]::OutputEncoding = $utf8
+$OutputEncoding = $utf8
+
 $rootDir = Split-Path -Parent $PSScriptRoot
 $targetDir = Join-Path $rootDir "chess-tournament/target"
 
