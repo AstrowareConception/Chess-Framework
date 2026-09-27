@@ -60,6 +60,27 @@ public final class BotCatalog {
         );
     }
 
+    /**
+     * Bots étudiants découverts automatiquement.
+     */
+    public static Map<String, BotFactory> studentBots() {
+        Map<String, Registration> students =
+            new LinkedHashMap<>();
+
+        REGISTRATIONS.forEach(
+            (key, registration) -> {
+                if (key.startsWith("student-")) {
+                    students.put(
+                        key,
+                        registration
+                    );
+                }
+            }
+        );
+
+        return factories(students);
+    }
+
     public static Optional<BotFactory> find(
         String name
     ) {
