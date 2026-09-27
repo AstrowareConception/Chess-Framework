@@ -7,9 +7,11 @@ import java.util.Optional;
 /**
  * Échelle IRIS-Elo calibrée des bots de référence.
  *
- * <p>Les valeurs proviennent de la seconde campagne de calibration
- * empirique : 528 parties, 8 parties par paire, Elo initial 1000,
- * K=24, seed 20260927. Elles restent relatives au pool de bots
+ * <p>Les écarts proviennent de la seconde campagne de calibration
+ * empirique : 528 parties, 8 parties par paire, K=24, seed 20260927.
+ * La campagne brute a été jouée autour de 1000 puis toute l'échelle a
+ * été translatée de +500 points. Une translation Elo ne modifie ni les
+ * écarts, ni les probabilités attendues. Elles restent relatives au pool
  * Chess Framework et n'ont aucune équivalence FIDE.</p>
  */
 public final class ReferenceEloCatalog {
@@ -50,7 +52,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "random",
-            840,
+            1_340,
             "Découverte",
             "Joue légalement sans raisonnement stratégique."
         );
@@ -58,7 +60,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "greedy",
-            955,
+            1_455,
             "Débutant",
             "Comprend le gain matériel immédiat mais ignore les conséquences."
         );
@@ -66,7 +68,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "berserker",
-            951,
+            1_451,
             "Agressif",
             "Cherche l'initiative et accepte beaucoup de risque."
         );
@@ -74,7 +76,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "cautious",
-            1_024,
+            1_524,
             "Prudent",
             "Évite mieux les prises risquées et protège son roi."
         );
@@ -82,7 +84,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "guardian",
-            1_057,
+            1_557,
             "Défensif",
             "Utilise la projection pour sauver les pièces menacées."
         );
@@ -90,7 +92,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "architect",
-            886,
+            1_386,
             "Planificateur",
             "Combine ouvertures, développement, centre et roque."
         );
@@ -98,7 +100,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "tactical",
-            1_038,
+            1_538,
             "Tactique",
             "Reconnaît plusieurs motifs tactiques et les priorise."
         );
@@ -106,7 +108,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "pressure",
-            962,
+            1_462,
             "Pression",
             "Cherche clouages, surcharge, enfilades et contraintes."
         );
@@ -114,7 +116,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "chameleon",
-            997,
+            1_497,
             "Adaptatif",
             "Change de profil et de priorités selon la phase de jeu."
         );
@@ -122,7 +124,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "positional",
-            1_008,
+            1_508,
             "Positionnel",
             "Compare globalement matériel, mobilité, centre, pions et roi."
         );
@@ -130,7 +132,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "lookahead",
-            1_152,
+            1_652,
             "Anticipation",
             "Évalue une meilleure réponse adverse avant de décider."
         );
@@ -138,7 +140,7 @@ public final class ReferenceEloCatalog {
         put(
             ratings,
             "minimax",
-            1_129,
+            1_629,
             "Recherche",
             "Utilise une recherche Minimax bornée avec alpha-bêta."
         );
