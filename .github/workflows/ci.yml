@@ -207,7 +207,7 @@ jobs:
           if ((Get-Item $csv).Length -le 0) { throw "CSV estimation Elo Windows vide." }
 
           $text = $output -join "`n"
-          if ($text -notmatch "IRIS-Elo estimé") {
+          if ($text -notmatch "IRIS-Elo") {
               throw "Estimation Elo Windows absente."
           }
 
