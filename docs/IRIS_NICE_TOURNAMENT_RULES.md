@@ -315,6 +315,16 @@ bash scripts/chess.sh elo-estimate-all --games=8 --csv=iris-student-ratings.csv
 
 Cela fournit un IRIS-Elo estimé et un intervalle de confiance pour chaque bot étudiant.
 
+L'organisateur peut aussi utiliser directement :
+
+```text
+GitHub Actions
+→ Student Elo Estimates
+→ Run workflow
+```
+
+Le classement estimatif est alors produit automatiquement comme artefact CSV.
+
 Voir `docs/ELO_BENCHMARK.md` et `docs/ELO_ESTIMATE.md`.
 
 ---
