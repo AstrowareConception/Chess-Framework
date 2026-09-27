@@ -14,6 +14,12 @@ import fr.astroware.chess.tournament.match.MatchConfiguration;
 import fr.astroware.chess.tournament.match.MatchResult;
 import fr.astroware.chess.tournament.match.MatchRunner;
 import fr.astroware.chess.tournament.pgn.PgnExporter;
+import fr.astroware.chess.tournament.rating.BotEloEstimate;
+import fr.astroware.chess.tournament.rating.BotEloEstimateCsvExporter;
+import fr.astroware.chess.tournament.rating.BotEloEstimateReporter;
+import fr.astroware.chess.tournament.rating.BotEloEstimateSettings;
+import fr.astroware.chess.tournament.rating.BotEloEstimator;
+import fr.astroware.chess.tournament.rating.EloReferenceOpponent;
 import fr.astroware.chess.tournament.rating.EloBenchmark;
 import fr.astroware.chess.tournament.rating.EloBenchmarkCsvExporter;
 import fr.astroware.chess.tournament.rating.EloBenchmarkReporter;
@@ -85,6 +91,11 @@ public final class ChessFrameworkCli {
             return;
         }
 
+        if ("elo-estimate".equals(mode)) {
+            runEloEstimate(args);
+            return;
+        }
+
         if ("validate-students".equals(mode)) {
             validateStudents();
             return;
@@ -124,6 +135,222 @@ public final class ChessFrameworkCli {
         );
     }
 
+
+
+    private static void runEloEstimate(
+        String[] args
+    ) {
+        if (args.length < 2) {
+            throw new IllegalArgumentException(
+                "Usage : elo-estimate <bot> [--refs=a,b,c] [--games=N]"
+            );
+        }
+
+        String targetKey =
+            args[1].toLowerCase(Locale.ROOT);
+
+        boolean forceIsolation =
+            hasFlag(args, "--isolated");
+
+        IsolatedBotSettings isolationSettings =
+            readIsolationSettings(args);
+
+        boolean targetIsolation =
+            forceIsolation
+                || targetKey.startsWith("student-");
+
+        TournamentParticipant target =
+            tournamentParticipant(
+                targetKey,
+                targetIsolation,
+                isolationSettings
+            );
+
+        List<String> referenceKeys =
+            readReferenceKeys(
+                args,
+                targetKey
+            );
+
+        List<EloReferenceOpponent> references =
+            referenceKeys.stream()
+                .map(key -> {
+                    double rating =
+                        ReferenceEloCatalog.find(key)
+                            .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                    "Le bot '"
+                                        + key
+                                        + "' n'est pas une référence Elo calibrée."
+                                )
+                            )
+                            .rating();
+
+                    TournamentParticipant participant =
+                        tournamentParticipant(
+                            key,
+                            forceIsolation,
+                            isolationSettings
+                        );
+
+                    return new EloReferenceOpponent(
+                        participant,
+                        rating
+                    );
+                })
+                .toList();
+
+        BotEloEstimateSettings settings =
+            new BotEloEstimateSettings(
+                readGamesPerReference(args),
+                readMaxPlies(args),
+                readSeed(args),
+                readDoubleOption(
+                    args,
+                    "--prior-elo=",
+                    1_500.0
+                ),
+                readDoubleOption(
+                    args,
+                    "--prior-sigma=",
+                    800.0
+                )
+            );
+
+        if (targetIsolation
+            || forceIsolation) {
+            printIsolationSettings(
+                isolationSettings
+            );
+        }
+
+        int expectedGames =
+            settings.expectedGameCount(
+                references.size()
+            );
+
+        System.out.printf(
+            Locale.ROOT,
+            "Estimation Elo : %s contre %d référence(s), %d parties%n",
+            targetKey,
+            references.size(),
+            expectedGames
+        );
+
+        BotEloEstimate estimate =
+            new BotEloEstimator().estimate(
+                target,
+                references,
+                settings
+            );
+
+        new BotEloEstimateReporter()
+            .print(estimate);
+
+        for (String arg : args) {
+            if (arg.startsWith("--csv=")) {
+                Path path =
+                    Path.of(
+                        arg.substring(
+                            "--csv=".length()
+                        )
+                    );
+
+                writeUtf8(
+                    path,
+                    new BotEloEstimateCsvExporter()
+                        .export(estimate),
+                    "estimation Elo"
+                );
+            }
+        }
+    }
+
+    private static List<String> readReferenceKeys(
+        String[] args,
+        String targetKey
+    ) {
+        for (String arg : args) {
+            if (arg.startsWith("--refs=")) {
+                String raw =
+                    arg.substring(
+                        "--refs=".length()
+                    );
+
+                List<String> keys =
+                    java.util.Arrays.stream(
+                        raw.split(",")
+                    )
+                    .map(String::trim)
+                    .filter(value ->
+                        !value.isEmpty()
+                    )
+                    .map(value ->
+                        value.toLowerCase(
+                            Locale.ROOT
+                        )
+                    )
+                    .filter(value ->
+                        !value.equals(targetKey)
+                    )
+                    .distinct()
+                    .toList();
+
+                if (keys.isEmpty()) {
+                    throw new IllegalArgumentException(
+                        "--refs doit contenir au moins une référence différente du bot évalué"
+                    );
+                }
+
+                return keys;
+            }
+        }
+
+        List<String> keys =
+            new ArrayList<>(
+                ReferenceEloCatalog.all()
+                    .keySet()
+            );
+
+        keys.remove(targetKey);
+
+        keys.sort(
+            java.util.Comparator.comparingInt(
+                key ->
+                    ReferenceEloCatalog
+                        .find(key)
+                        .orElseThrow()
+                        .rating()
+            )
+        );
+
+        if (keys.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Aucune référence Elo disponible"
+            );
+        }
+
+        return List.copyOf(keys);
+    }
+
+    private static int readGamesPerReference(
+        String[] args
+    ) {
+        int games =
+            readPositiveIntOption(
+                args,
+                "--games=",
+                4
+            );
+
+        if (games % 2 != 0) {
+            throw new IllegalArgumentException(
+                "--games doit être pair pour équilibrer les couleurs"
+            );
+        }
+
+        return games;
+    }
 
     private static void runEloBenchmark(
         String[] args
@@ -1026,6 +1253,7 @@ public final class ChessFrameworkCli {
               list
               ratings
               elo-benchmark [bot1 bot2 ...] [--students|--all] [options]
+              elo-estimate <bot> [options]
               validate-students
               console <blancs> <noirs> [options]
               pgn     <blancs> <noirs> [fichier.pgn] [options]
@@ -1049,8 +1277,8 @@ public final class ChessFrameworkCli {
               --pgn=parties.pgn
               --csv=classement.csv
 
-            Benchmark Elo :
-              --games=N          nombre pair de parties par paire (défaut 4)
+            Benchmark / estimation Elo :
+              --games=N          nombre pair de parties par adversaire (défaut 4)
               --initial-elo=N    Elo initial d'un bot sans historique (défaut 1500)
               --ratings-in=file   reprend les Elo d'un précédent elo-final.csv
               --k=N              facteur K (défaut 24)
@@ -1071,6 +1299,8 @@ public final class ChessFrameworkCli {
               elo-benchmark --ratings-in=elo.csv --games=8 --csv=elo-next.csv
               elo-benchmark random greedy tactical --games=8
               elo-benchmark --students --games=8 --isolated
+              elo-estimate student-deep-rabbit --games=4
+              elo-estimate student-deep-rabbit --refs=random,tactical,guardian,minimax,lookahead --games=8 --csv=deep-rabbit-elo.csv
               tournament tactical positional --pgn=parties.pgn --csv=classement.csv
 
             Utilisez :
