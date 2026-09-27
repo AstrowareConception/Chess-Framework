@@ -190,7 +190,7 @@ jobs:
         shell: pwsh
         run: |
           $csv = Join-Path $env:RUNNER_TEMP "student-elo-estimate.csv"
-          $output = & ./scripts/chess.ps1 elo-estimate student-win-smoke --refs=random,greedy --games=2 --max-plies=4 --seed=456 --timeout-ms=2000 --heap-mb=128 "--csv=$csv"
+          $output = & ./scripts/chess.ps1 elo-estimate student-win-smoke "--refs=random,greedy" --games=2 --max-plies=4 --seed=456 --timeout-ms=2000 --heap-mb=128 "--csv=$csv"
           $output | Write-Host
 
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
