@@ -371,13 +371,13 @@ Cette valeur ne correspond pas à un Elo FIDE. Elle sert uniquement à choisir u
 Exemple de progression calibrée :
 
 ```text
-Random      840
-Architect   886
-Greedy      955
-Tactical    1038
-Guardian    1057
-Minimax     1129
-Lookahead   1152
+Random      1340
+Architect   1386
+Greedy      1455
+Tactical    1538
+Guardian    1557
+Minimax     1629
+Lookahead   1652
 ```
 
 Une bonne méthode de travail consiste à faire progresser son bot dans cette échelle plutôt que de ne tester que contre RandomBot.
