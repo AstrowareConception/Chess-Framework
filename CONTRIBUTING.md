@@ -18,13 +18,17 @@ Le tutoriel complet est disponible dans :
 docs/STUDENT_TOURNAMENT_BOT.md
 ```
 
-### 1. Créer une branche
+### 1. Forker et créer une branche
+
+Sans droit d'écriture sur le dépôt principal, créez d'abord un **fork** sur GitHub et clonez votre fork. Le [guide étudiant](docs/STUDENT_TOURNAMENT_BOT.md#1-forker-le-dépôt-et-créer-sa-branche) détaille cette étape. À partir du `main` de votre clone :
 
 Exemple :
 
 ```bash
 git switch -c bot/ada-lovelace
 ```
+
+Après vos tests, poussez cette branche sur votre fork et ouvrez une Pull Request vers `AstrowareConception/Chess-Framework:main`.
 
 ### 2. Ajouter le bot
 
@@ -107,7 +111,7 @@ Après merge, le catalogue découvre automatiquement le bot. Il n'est pas néces
 La description doit préciser :
 
 - nom du bot ;
-- auteur ou équipe ;
+- prénom et nom réels de l'étudiant IRIS Nice ;
 - stratégie générale ;
 - ordre des règles principales ;
 - situations personnalisées ;

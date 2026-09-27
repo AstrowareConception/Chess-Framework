@@ -14,17 +14,17 @@ Les exemples de lancement utilisent Bash. Sous Windows, remplacez `bash scripts/
 
 ---
 
-## 1. Créer sa branche
+## 1. Forker le dépôt et créer sa branche
 
-Partez d'un `main` à jour :
+Si vous n'avez pas de droits d'écriture sur le dépôt du cours, cliquez sur **Fork** depuis [le dépôt principal](https://github.com/AstrowareConception/Chess-Framework), puis clonez **votre fork**. Remplacez `ALICE-GITHUB` par votre identifiant GitHub :
 
 ```bash
-git switch main
-git pull
+git clone https://github.com/ALICE-GITHUB/Chess-Framework.git
+cd Chess-Framework
 git switch -c bot/alice-deep-rabbit
 ```
 
-Une Pull Request de bot doit rester consacrée à **un seul bot**.
+Si vous travaillez déjà dans votre clone, placez-vous sur `main`, exécutez `git pull`, puis créez la branche. Les étudiants disposant de droits d'écriture peuvent cloner directement le dépôt principal. Une Pull Request de bot doit rester consacrée à **un seul bot**.
 
 ---
 
@@ -127,7 +127,7 @@ Les trois champs doivent être renseignés :
 ```java
 new BotMetadata(
     "Nom du bot",
-    "Auteur ou équipe",
+    "Prénom Nom de l'étudiant",
     "Description de la stratégie"
 );
 ```
@@ -438,10 +438,13 @@ Avant le push final :
 
 ```bash
 mvn verify
+bash scripts/chess.sh validate-students
 git status
+git add chess-bots/src/main/java/fr/astroware/chess/bots/students/ chess-bots/src/test/java/fr/astroware/chess/bots/students/
+git commit -m "feat: add DeepRabbitBot"
 ```
 
-Vérifiez que votre PR ne contient que votre package `students` et ses tests.
+Vérifiez avec `git status` que votre PR ne contient que votre package `students` et ses tests. Si Git affiche d'autres modifications, ne les ajoutez pas à ce commit. Sur PowerShell, utilisez `powershell -ExecutionPolicy Bypass -File scripts/chess.ps1 validate-students`.
 
 Puis :
 
@@ -449,10 +452,10 @@ Puis :
 git push -u origin bot/alice-deep-rabbit
 ```
 
-Ouvrez la Pull Request vers `main` et complétez le template :
+Sur la page GitHub de votre fork, ouvrez une Pull Request avec **base repository** `AstrowareConception/Chess-Framework`, branche `main`, et **head repository** votre fork, branche `bot/alice-deep-rabbit`. Vérifiez les fichiers affichés dans « Files changed » et complétez le template :
 
 - nom du bot ;
-- auteur / équipe ;
+- prénom et nom réels de l'étudiant ;
 - stratégie ;
 - règles principales ;
 - extensions personnelles ;
