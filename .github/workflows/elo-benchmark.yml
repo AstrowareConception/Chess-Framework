@@ -20,7 +20,7 @@ on:
       initial_elo:
         description: Elo initial commun
         required: true
-        default: '1000'
+        default: '1500'
         type: string
       k_factor:
         description: Facteur K
@@ -54,7 +54,7 @@ jobs:
     env:
       ELO_POPULATION: ${{ inputs.population || 'reference' }}
       ELO_GAMES_PER_PAIR: ${{ inputs.games_per_pair || '4' }}
-      ELO_INITIAL: ${{ inputs.initial_elo || '1000' }}
+      ELO_INITIAL: ${{ inputs.initial_elo || '1500' }}
       ELO_K: ${{ inputs.k_factor || '24' }}
       ELO_SEED: ${{ inputs.seed || '42' }}
       ELO_MAX_PLIES: ${{ inputs.max_plies || '400' }}
