@@ -57,10 +57,10 @@ jobs:
     timeout-minutes: 180
     env:
       ELO_POPULATION: ${{ inputs.population || 'reference' }}
-      ELO_GAMES_PER_PAIR: ${{ inputs.games_per_pair || '4' }}
+      ELO_GAMES_PER_PAIR: ${{ github.event_name == 'workflow_dispatch' && inputs.games_per_pair || '8' }}
       ELO_INITIAL: ${{ inputs.initial_elo || '1000' }}
       ELO_K: ${{ inputs.k_factor || '24' }}
-      ELO_SEED: ${{ inputs.seed || '42' }}
+      ELO_SEED: ${{ github.event_name == 'workflow_dispatch' && inputs.seed || '20260927' }}
       ELO_MAX_PLIES: ${{ inputs.max_plies || '400' }}
       ELO_ISOLATED: ${{ inputs.isolated || 'false' }}
 
