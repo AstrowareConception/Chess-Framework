@@ -19,6 +19,7 @@ import fr.astroware.chess.tournament.rating.EloBenchmarkCsvExporter;
 import fr.astroware.chess.tournament.rating.EloBenchmarkReporter;
 import fr.astroware.chess.tournament.rating.EloBenchmarkResult;
 import fr.astroware.chess.tournament.rating.EloBenchmarkSettings;
+import fr.astroware.chess.tournament.rating.EloRatingsCsv;
 import fr.astroware.chess.tournament.rating.ReferenceEloCatalog;
 import fr.astroware.chess.tournament.roundrobin.RoundRobinConfiguration;
 import fr.astroware.chess.tournament.roundrobin.RoundRobinPgnExporter;
@@ -209,12 +210,15 @@ public final class ChessFrameworkCli {
                 )
                 .toList();
 
+        Map<String, Double> resumeRatings =
+            readEloRatings(args);
+
         EloBenchmarkSettings settings =
             new EloBenchmarkSettings(
                 readDoubleOption(
                     args,
                     "--initial-elo=",
-                    1_000.0
+                    1_500.0
                 ),
                 readDoubleOption(
                     args,
@@ -253,6 +257,7 @@ public final class ChessFrameworkCli {
             new EloBenchmark().run(
                 participants,
                 settings,
+                resumeRatings,
                 record ->
                     reporter.printProgress(
                         record,
@@ -314,6 +319,36 @@ public final class ChessFrameworkCli {
         }
 
         return defaultValue;
+    }
+
+
+    private static Map<String, Double> readEloRatings(
+        String[] args
+    ) {
+        for (String arg : args) {
+            if (arg.startsWith("--ratings-in=")) {
+                Path path =
+                    Path.of(
+                        arg.substring(
+                            "--ratings-in=".length()
+                        )
+                    );
+
+                Map<String, Double> ratings =
+                    EloRatingsCsv.read(path);
+
+                System.out.println(
+                    "Reprise Elo : "
+                        + ratings.size()
+                        + " rating(s) chargés depuis "
+                        + path.toAbsolutePath()
+                );
+
+                return ratings;
+            }
+        }
+
+        return Map.of();
     }
 
     private static void writeEloExports(
@@ -1016,7 +1051,8 @@ public final class ChessFrameworkCli {
 
             Benchmark Elo :
               --games=N          nombre pair de parties par paire (défaut 4)
-              --initial-elo=N    Elo initial commun (défaut 1000)
+              --initial-elo=N    Elo initial d'un bot sans historique (défaut 1500)
+              --ratings-in=file   reprend les Elo d'un précédent elo-final.csv
               --k=N              facteur K (défaut 24)
               --csv=elo.csv      classement final
               --history=hist.csv historique match par match
@@ -1032,6 +1068,7 @@ public final class ChessFrameworkCli {
               tournament --students --games=4 --isolated
               tournament --all --games=2 --isolated --timeout-ms=3000
               elo-benchmark --games=4 --csv=elo.csv --history=elo-history.csv
+              elo-benchmark --ratings-in=elo.csv --games=8 --csv=elo-next.csv
               elo-benchmark random greedy tactical --games=8
               elo-benchmark --students --games=8 --isolated
               tournament tactical positional --pgn=parties.pgn --csv=classement.csv
