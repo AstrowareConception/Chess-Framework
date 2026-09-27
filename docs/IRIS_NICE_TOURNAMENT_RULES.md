@@ -269,18 +269,19 @@ Afficher l'échelle :
 bash scripts/chess.sh ratings
 ```
 
-Exemples de progression actuelle :
+Exemples de calibration actuelle :
 
 ```text
-Random      ~ 400
-Greedy      ~ 600
-Tactical    ~ 1000
-Positional  ~ 1200
-Lookahead   ~ 1300
-Minimax     ~ 1400
+Random      840
+Architect   886
+Greedy      955
+Tactical    1038
+Guardian    1057
+Minimax     1129
+Lookahead   1152
 ```
 
-Les valeurs sont provisoires et pourront être recalibrées après accumulation de matchs réels.
+Ces valeurs proviennent d'une campagne de **528 parties**. Elles peuvent évoluer si le code des bots de référence change ou après une nouvelle calibration.
 
 ---
 
