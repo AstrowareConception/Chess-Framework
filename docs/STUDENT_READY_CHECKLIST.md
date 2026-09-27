@@ -102,7 +102,9 @@ Elle est volontairement distincte de la roadmap : les extensions futures — UCI
 - [x] export CSV ;
 - [x] rapport console ;
 - [x] forfait structuré ;
-- [x] incidents exploitables.
+- [x] incidents exploitables ;
+- [x] benchmark IRIS-Elo dynamique avec mise à jour après chaque partie ;
+- [x] export du classement Elo et de l'historique match par match.
 
 ---
 
