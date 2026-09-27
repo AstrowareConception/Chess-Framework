@@ -491,3 +491,49 @@ Cette table est utile :
 - pour comparer la force estimée au classement réel du tournoi.
 
 Elle ne remplace pas le classement officiel du tournoi.
+
+
+---
+
+## 19. Workflow GitHub organisateur
+
+Le dépôt fournit un workflow manuel :
+
+```text
+.github/workflows/student-elo-estimates.yml
+```
+
+Dans GitHub :
+
+```text
+Actions
+→ Student Elo Estimates
+→ Run workflow
+```
+
+Paramètres :
+
+- nombre de parties par référence ;
+- panel de références optionnel ;
+- seed ;
+- max plies ;
+- timeout étudiant ;
+- mémoire JVM étudiant.
+
+Le workflow :
+
+1. compile le framework ;
+2. découvre automatiquement tous les bots étudiants mergés ;
+3. les exécute en JVM isolée ;
+4. estime leur IRIS-Elo ;
+5. produit un CSV synthétique ;
+6. publie le résultat comme artefact GitHub.
+
+Fichiers :
+
+```text
+iris-student-ratings.csv
+iris-student-ratings.log
+```
+
+C'est le mode recommandé pour produire une photographie du niveau estimé de toute la promotion avant le tournoi.
