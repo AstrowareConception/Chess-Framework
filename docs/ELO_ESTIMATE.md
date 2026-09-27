@@ -436,3 +436,58 @@ powershell -ExecutionPolicy Bypass -File scripts/chess.ps1 elo-estimate student-
 ```
 
 Sans guillemets, PowerShell peut interpréter la virgule comme un séparateur de tableau avant même que le CLI Java ne reçoive l'argument.
+
+
+---
+
+## 18. Estimer tous les bots étudiants
+
+L'organisateur peut estimer automatiquement **tous les bots étudiants mergés** :
+
+```bash
+bash scripts/chess.sh elo-estimate-all --games=4
+```
+
+Avec export :
+
+```bash
+bash scripts/chess.sh elo-estimate-all \
+  --games=8 \
+  --csv=iris-student-ratings.csv
+```
+
+Chaque bot étudiant :
+
+- est découvert automatiquement dans le catalogue ;
+- est exécuté en JVM isolée ;
+- joue contre le même panel de références ;
+- reçoit une estimation indépendante ;
+- conserve son intervalle de confiance.
+
+Le rapport final contient :
+
+```text
+rang
+bot
+auteur
+IRIS-Elo estimé
+IC 95 %
+nombre de parties
+```
+
+Exemple :
+
+```text
+1  Deep Rabbit     Alice Dupont     1743   1658 — 1828   96
+2  Blue Knight     Bob Martin       1681   1590 — 1772   96
+3  Solid Turtle    Chloé Bernard    1512   1425 — 1599   96
+```
+
+Cette table est utile :
+
+- avant le tournoi pour situer les participants ;
+- après les Pull Requests pour vérifier la diversité du niveau ;
+- pour produire un classement d'entraînement ;
+- pour comparer la force estimée au classement réel du tournoi.
+
+Elle ne remplace pas le classement officiel du tournoi.
