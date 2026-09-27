@@ -421,3 +421,18 @@ cela ne signifie pas :
 Pour relier un jour les deux échelles, il faudrait ajouter des ancres externes indépendamment calibrées — par exemple des moteurs UCI configurés à différents niveaux.
 
 Cette évolution reste possible sans remettre en cause le système actuel.
+
+
+---
+
+## 17. PowerShell et `--refs`
+
+Sous PowerShell, une valeur contenant des virgules doit être passée entre guillemets.
+
+Utilisez :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/chess.ps1 elo-estimate student-deep-rabbit "--refs=random,greedy,tactical,guardian,minimax,lookahead" --games=8
+```
+
+Sans guillemets, PowerShell peut interpréter la virgule comme un séparateur de tableau avant même que le CLI Java ne reçoive l'argument.
