@@ -42,6 +42,11 @@ on:
         required: true
         default: false
         type: boolean
+      ratings_file:
+        description: CSV de départ ; laisser vide pour repartir de zéro
+        required: false
+        default: 'config/iris-elo-reference.csv'
+        type: string
 
 permissions:
   contents: read
@@ -59,6 +64,7 @@ jobs:
       ELO_SEED: ${{ inputs.seed || '42' }}
       ELO_MAX_PLIES: ${{ inputs.max_plies || '400' }}
       ELO_ISOLATED: ${{ inputs.isolated || 'false' }}
+      ELO_RATINGS_FILE: ${{ inputs.ratings_file || '' }}
 
     steps:
       - name: Checkout
@@ -101,8 +107,18 @@ jobs:
             ISOLATION="--isolated"
           fi
 
+          RATINGS=""
+          if [[ -n "$ELO_RATINGS_FILE" ]]; then
+            if [[ ! -f "$ELO_RATINGS_FILE" ]]; then
+              echo "Fichier Elo introuvable : $ELO_RATINGS_FILE"
+              exit 2
+            fi
+            RATINGS="--ratings-in=$ELO_RATINGS_FILE"
+          fi
+
           bash scripts/chess.sh elo-benchmark \
             $POPULATION \
+            $RATINGS \
             --games="$ELO_GAMES_PER_PAIR" \
             --initial-elo="$ELO_INITIAL" \
             --k="$ELO_K" \
