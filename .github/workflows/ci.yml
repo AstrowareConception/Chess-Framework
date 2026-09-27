@@ -185,3 +185,24 @@ jobs:
           if ($csvText -notmatch "Windows Smoke") {
               throw "Le classement Windows ne contient pas le bot étudiant."
           }
+
+      - name: Estimate Windows student Elo
+        shell: pwsh
+        run: |
+          $csv = Join-Path $env:RUNNER_TEMP "student-elo-estimate.csv"
+          $output = & ./scripts/chess.ps1 elo-estimate student-win-smoke --refs=random,greedy --games=2 --max-plies=4 --seed=456 --timeout-ms=2000 --heap-mb=128 "--csv=$csv"
+          $output | Write-Host
+
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (Test-Path $csv)) { throw "CSV estimation Elo Windows absent." }
+          if ((Get-Item $csv).Length -le 0) { throw "CSV estimation Elo Windows vide." }
+
+          $text = $output -join "`n"
+          if ($text -notmatch "IRIS-Elo estimé") {
+              throw "Estimation Elo Windows absente."
+          }
+
+          $csvText = Get-Content $csv -Raw
+          if ($csvText -notmatch "estimated_elo") {
+              throw "CSV estimation Elo Windows invalide."
+          }
