@@ -384,6 +384,31 @@ Une bonne méthode de travail consiste à faire progresser son bot dans cette é
 
 ---
 
+## 11 ter. Estimer son propre IRIS-Elo
+
+Après avoir validé votre bot :
+
+```bash
+bash scripts/chess.sh elo-estimate student-deep-rabbit
+```
+
+Le framework joue automatiquement contre les références calibrées et retourne :
+
+- l'IRIS-Elo estimé ;
+- un intervalle de confiance à 95 % ;
+- le score obtenu contre chaque référence ;
+- les forfaits éventuels.
+
+Pour une estimation plus stable :
+
+```bash
+bash scripts/chess.sh elo-estimate student-deep-rabbit --games=8
+```
+
+Voir `docs/ELO_ESTIMATE.md`.
+
+---
+
 ## 12. Faire un mini-tournoi local
 
 ```bash
