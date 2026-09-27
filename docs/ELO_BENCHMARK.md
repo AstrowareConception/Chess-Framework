@@ -412,10 +412,11 @@ Les calibrations de référence sont archivées dans :
 docs/calibrations/
 ```
 
-Première campagne :
+Campagnes :
 
 ```text
 IRIS_ELO_REFERENCE_2026-09-27_SEED42.md
+IRIS_ELO_REFERENCE_2026-09-27_SEED20260927.md
 ```
 
-Elle contient 264 parties et constitue le premier point de comparaison empirique de l'échelle des bots de référence.
+La première contient 264 parties. La seconde contient 528 parties et sert de base à l'échelle IRIS-Elo actuellement affichée par `ratings`.
