@@ -1,45 +1,90 @@
 # Chess Framework
 
-Framework pédagogique Java destiné à la création de bots d'échecs et à l'organisation de tournois entre étudiants.
+Framework pédagogique **Java** : vous créez un joueur d'échecs en pratiquant l'héritage, les interfaces, les génériques, la composition et les tests. Le dépôt fournit déjà les règles du jeu et le tournoi ; votre travail porte sur **la stratégie de votre bot**.
 
-## Quick start étudiant
+## Vous êtes étudiant ? Commencez ici
 
-Prérequis : **Java 25**, **Maven 3.9.x** et **Git**.
+**Votre objectif :** livrer une classe `VotreNomBot extends ChessBot`, ses éventuelles classes auxiliaires et au moins un test. Elle doit choisir des coups légaux, avoir une stratégie identifiable et être soumise par Pull Request. Vous n'avez ni moteur d'échecs ni interface graphique à développer.
+
+### 1. Préparer votre poste
+
+Installez **JDK 25**, **Maven 3.9.x** et **Git**, puis vérifiez dans un terminal :
 
 ```bash
-git clone https://github.com/AstrowareConception/Chess-Framework.git
+java --version
+mvn --version
+git --version
+```
+
+`java` et le Java affiché par `mvn --version` doivent pointer vers le **JDK 25**. Dans IntelliJ IDEA ou un autre IDE, choisissez aussi ce JDK pour le projet Maven. En cas de difficulté : [dépannage](docs/TROUBLESHOOTING.md).
+
+### 2. Faire un fork, cloner et créer une branche personnelle
+
+Sur [GitHub](https://github.com/AstrowareConception/Chess-Framework), cliquez sur **Fork** pour créer une copie dans votre compte. Clonez **votre fork** (remplacez `ALICE-GITHUB` par votre identifiant GitHub), puis créez votre branche :
+
+```bash
+git clone https://github.com/ALICE-GITHUB/Chess-Framework.git
 cd Chess-Framework
+git switch -c bot/alice-deep-rabbit
 ```
 
-Créer automatiquement son bot sous Linux/macOS/Git Bash :
+Remplacez le nom de la branche et les noms d'exemple ci-dessous par les vôtres. **Créez la branche avant le bot** : votre Pull Request contiendra alors uniquement votre travail. Si l'enseignant vous a donné un accès direct en écriture, vous pouvez cloner le dépôt principal et sauter l'étape du fork.
+
+### 3. Générer votre bot et son test
+
+Linux, macOS ou Git Bash :
 
 ```bash
-bash scripts/new-student-bot.sh DeepRabbitBot "Alice Dupont" "Deep Rabbit"
+bash scripts/new-student-bot.sh DeepRabbitBot "Alice Dupont" "Deep Rabbit" "Bot prudent qui protège son roi."
 ```
 
-Sous Windows PowerShell :
+Windows PowerShell, depuis la racine du dépôt :
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/new-student-bot.ps1 DeepRabbitBot "Alice Dupont" "Deep Rabbit"
+powershell -ExecutionPolicy Bypass -File scripts/new-student-bot.ps1 DeepRabbitBot "Alice Dupont" "Deep Rabbit" "Bot prudent qui protège son roi."
 ```
 
-Compiler, tester et produire le runner autonome :
+Le script crée `DeepRabbitBot.java` et `DeepRabbitBotTest.java` dans les packages `students` prévus pour la soumission. Ouvrez ces deux fichiers : le bot généré sait déjà jouer ; **votre exercice consiste à remplacer progressivement sa stratégie de départ par la vôtre**. La clé du bot dans la console sera `student-deep-rabbit`. Pour le tournoi IRIS Nice, remplacez « Alice Dupont » par **votre prénom et votre nom réels** : la participation est individuelle, avec un bot par étudiant.
+
+### 4. Construire, valider et jouer
 
 ```bash
 mvn verify
-```
-
-Puis valider et lancer le bot :
-
-```bash
 bash scripts/chess.sh validate-students
 bash scripts/chess.sh list
 bash scripts/chess.sh console student-deep-rabbit random --isolated
 ```
 
-Sous Windows, remplacez `bash scripts/chess.sh` par `powershell -ExecutionPolicy Bypass -File scripts/chess.ps1`.
+Sur Windows PowerShell, gardez `mvn verify` et remplacez `bash scripts/chess.sh` par `powershell -ExecutionPolicy Bypass -File scripts/chess.ps1` (par exemple `powershell -ExecutionPolicy Bypass -File scripts/chess.ps1 list`). `mvn verify` compile et lance les tests ; `validate-students` vérifie l'identité du bot et lui fait jouer des parties isolées avec les deux couleurs ; `list` confirme sa découverte ; `console` montre un duel. **Si vous modifiez le Java, relancez `mvn verify` avant le duel** pour mettre à jour le runner.
 
-Le guide complet est dans [docs/STUDENT_TOURNAMENT_BOT.md](docs/STUDENT_TOURNAMENT_BOT.md).
+### 5. Améliorer la stratégie, puis rendre le travail
+
+Suivez cet ordre de travail :
+
+1. Lisez [le modèle objet illustré par des diagrammes UML](docs/OBJECT_MODEL.md) pour comprendre qui décide, qui détecte et qui valide un coup.
+2. Comparez [`RandomBot`](chess-bots/src/main/java/fr/astroware/chess/bots/baseline/RandomBot.java), [`GreedyBot`](chess-bots/src/main/java/fr/astroware/chess/bots/baseline/GreedyBot.java) et [`SolidPlannerBot`](chess-bots/src/main/java/fr/astroware/chess/bots/examples/SolidPlannerBot.java). Repérez leurs méthodes redéfinies et l'ordre de leurs règles.
+3. Modifiez **une règle à la fois** dans votre classe. Faites un duel contre `random`, puis `greedy` ; ajoutez un test qui prouve un comportement de votre stratégie, au-delà du seul nom du bot.
+4. Passez ensuite au [parcours d'exercices POO](docs/OBJECT_MODEL.md#parcours-de-travail-conseille) et au [guide complet de création et de Pull Request](docs/STUDENT_TOURNAMENT_BOT.md). Le bot et ses tests doivent rester dans les deux répertoires `students` ; aucune modification du framework ne doit figurer dans cette Pull Request.
+
+Avant de pousser : `mvn verify`, `validate-students`, puis `git status` pour contrôler les fichiers. Ajoutez seulement votre bot et ses tests, faites un commit et poussez votre branche :
+
+```bash
+git add chess-bots/src/main/java/fr/astroware/chess/bots/students/ chess-bots/src/test/java/fr/astroware/chess/bots/students/
+git commit -m "feat: add DeepRabbitBot"
+git push -u origin bot/alice-deep-rabbit
+```
+
+Sur GitHub, ouvrez une Pull Request de **votre branche du fork vers `AstrowareConception/Chess-Framework:main`** ; attendez les contrôles CI. La [checklist de rendu](docs/STUDENT_TOURNAMENT_BOT.md#16-checklist-avant-rendu) récapitule les conditions du tournoi. Un classement IRIS-Elo est disponible pour choisir des adversaires ; il n'est **pas** une mesure Elo FIDE.
+
+### Où chercher une réponse ?
+
+| Votre question | À lire |
+| --- | --- |
+| « Comment fonctionne le modèle et quel concept POO dois-je pratiquer ? » | [Modèle objet et exercices UML](docs/OBJECT_MODEL.md) |
+| « Comment écrire et soumettre mon bot ? » | [Guide de soumission](docs/STUDENT_TOURNAMENT_BOT.md) |
+| « Comment apprendre Java et l'API pas à pas ? » | [Bien démarrer](docs/GETTING_STARTED.md) |
+| « Une commande échoue ou le bot n'apparaît pas ? » | [Dépannage](docs/TROUBLESHOOTING.md) |
+| « Comment se déroule le tournoi IRIS Nice ? » | [Règlement](docs/IRIS_NICE_TOURNAMENT_RULES.md) |
 
 ## Vision
 
@@ -154,6 +199,7 @@ Il obtient alors un bot au comportement différent sans réécrire le moteur.
 
 ## Documentation
 
+- [Modèle objet UML et parcours d'exercices POO](docs/OBJECT_MODEL.md)
 - [Bien démarrer](docs/GETTING_STARTED.md)
 - [Créer et soumettre son bot de tournoi](docs/STUDENT_TOURNAMENT_BOT.md)
 - [Dépannage étudiant](docs/TROUBLESHOOTING.md)

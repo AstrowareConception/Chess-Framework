@@ -1,6 +1,6 @@
 # Bien démarrer — Guide étudiant
 
-Ce guide accompagne progressivement la découverte du Chess Framework.
+Ce guide accompagne progressivement la découverte du Chess Framework. Pour le parcours concret, partez du [README](../README.md#vous-êtes-étudiant--commencez-ici) ; pour visualiser les relations entre classes, consultez les [diagrammes UML](OBJECT_MODEL.md).
 
 L'objectif n'est pas seulement de fabriquer un bot qui joue aux échecs. Le projet sert aussi à comprendre comment plusieurs concepts de programmation orientée objet coopèrent dans une application réelle.
 
@@ -13,7 +13,7 @@ Votre travail final sera une classe Java représentant **votre propre joueur d'�
 Vous choisirez :
 
 - le **nom du bot** ;
-- votre **nom** ou celui de votre équipe ;
+- votre **prénom et votre nom réels** pour le tournoi individuel IRIS Nice ;
 - ses priorités ;
 - les situations qu'il sait reconnaître ;
 - les actions qu'il tente ;
@@ -60,13 +60,23 @@ Vérifiez Maven :
 mvn --version
 ```
 
-Puis clonez le dépôt et exécutez :
+Vérifiez que `mvn --version` utilise également Java 25. Sur [GitHub](https://github.com/AstrowareConception/Chess-Framework), créez d'abord votre **fork** avec le bouton « Fork ». Clonez votre fork (remplacez `ALICE-GITHUB` par votre identifiant), placez-vous dans son répertoire et créez votre branche personnelle **avant** de générer un bot :
+
+```bash
+git clone https://github.com/ALICE-GITHUB/Chess-Framework.git
+cd Chess-Framework
+git switch -c bot/alice-deep-rabbit
+```
+
+Si l'enseignant vous a donné les droits d'écriture sur le dépôt principal, le fork n'est pas nécessaire.
+
+Pour vérifier la base du projet, exécutez :
 
 ```bash
 mvn verify
 ```
 
-Cette commande :
+`mvn verify` :
 
 1. compile tous les modules ;
 2. compile les tests ;
@@ -82,7 +92,7 @@ Elle produit aussi le runner autonome :
 chess-tournament/target/chess-tournament-0.1.0-SNAPSHOT-runner.jar
 ```
 
-Pour générer immédiatement un squelette de bot et son test :
+Pour générer un squelette de bot et son test sur cette branche :
 
 ```bash
 bash scripts/new-student-bot.sh DeepRabbitBot "Alice Dupont" "Deep Rabbit"
@@ -101,6 +111,8 @@ mvn verify
 bash scripts/chess.sh validate-students
 bash scripts/chess.sh list
 ```
+
+Sous Windows PowerShell, lancez `powershell -ExecutionPolicy Bypass -File scripts/chess.ps1 validate-students` et `powershell -ExecutionPolicy Bypass -File scripts/chess.ps1 list` à la place des commandes Bash. Après une modification du bot, relancez `mvn verify` avant d'exécuter le runner.
 
 ---
 
@@ -265,7 +277,7 @@ public BotMetadata metadata() {
 ### Règles
 
 - `botName` : nom libre du bot ;
-- `authorName` : votre nom ou le nom de votre équipe ;
+- `authorName` : votre prénom et votre nom réels pour le tournoi individuel IRIS Nice ;
 - `description` : quelques mots sur sa personnalité.
 
 Le framework refuse un nom de bot ou un auteur vide.
@@ -328,7 +340,7 @@ Le bot doit aussi savoir :
 
 C'est le rôle de `Detection`.
 
-Une détection typée ressemble par exemple à :
+Une détection typée ressemble par exemple à cet extrait simplifié de `ForkDetection` (le vrai record contient aussi des informations sur les valeurs et la protection des pièces) :
 
 ```java
 public record ForkDetection(
