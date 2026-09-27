@@ -167,14 +167,17 @@ public final class EloBenchmarkCsvExporter {
     private static String csv(
         String value
     ) {
+        String quote =
+            Character.toString('"');
+
         String escaped =
             value.replace(
-                """,
-                """"
+                quote,
+                quote + quote
             );
 
-        return """
+        return quote
             + escaped
-            + """;
+            + quote;
     }
 }
