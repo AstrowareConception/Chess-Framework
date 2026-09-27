@@ -160,6 +160,7 @@ Il obtient alors un bot au comportement différent sans réécrire le moteur.
 - [Checklist V1 — prêt étudiant](docs/STUDENT_READY_CHECKLIST.md)
 - [Procédure de gel du framework](docs/FRAMEWORK_FREEZE.md)
 - [Benchmark IRIS-Elo dynamique](docs/ELO_BENCHMARK.md)
+- [Benchmark mon bot — estimation IRIS-Elo](docs/ELO_ESTIMATE.md)
 - [Spécifications fonctionnelles et pédagogiques](docs/SPECIFICATIONS.md)
 - [Architecture cible](docs/ARCHITECTURE.md)
 - [Évaluation des positions et des coups](docs/EVALUATION.md)
@@ -303,3 +304,16 @@ bash scripts/chess.sh elo-benchmark --games=4 --csv=elo-final.csv --history=elo-
 Avec 12 bots de référence et 4 parties par paire, le benchmark joue **264 parties** avec couleurs équilibrées et met à jour l'Elo après chaque match.
 
 Voir [docs/ELO_BENCHMARK.md](docs/ELO_BENCHMARK.md).
+
+
+### Estimer l'IRIS-Elo de son bot
+
+Un bot étudiant peut être évalué directement contre les références calibrées :
+
+```bash
+bash scripts/chess.sh elo-estimate student-deep-rabbit
+```
+
+Par défaut, il joue 4 parties contre chaque référence, avec couleurs équilibrées. Le framework retourne un IRIS-Elo estimé et un intervalle de confiance à 95 %.
+
+Voir [docs/ELO_ESTIMATE.md](docs/ELO_ESTIMATE.md).
