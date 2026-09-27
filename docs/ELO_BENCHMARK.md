@@ -10,11 +10,15 @@ Il remplace progressivement l'échelle de difficulté estimée à la main par un
 
 ## 1. Principe
 
-Tous les participants commencent avec le même Elo :
+Par défaut, un bot sans historique commence à :
 
 ```text
-1000
+1500
 ```
+
+Ce choix ne modifie pas les écarts ni les probabilités Elo : ajouter la même constante à tous les ratings est une simple translation de l'échelle.
+
+L'intérêt est uniquement de disposer d'une échelle plus lisible, laissant naturellement de la place à des bots très supérieurs au-dessus de 2000.
 
 Après chaque partie, leur Elo est immédiatement mis à jour.
 
@@ -44,7 +48,7 @@ La somme totale des Elo reste donc constante.
 Le réglage de référence est :
 
 ```text
-Elo initial     = 1000
+Elo initial     = 1500
 K               = 24
 parties / paire = 4
 max plies       = 400
@@ -117,6 +121,42 @@ Sans liste explicite, `elo-benchmark` utilise **tous les bots de référence**.
 
 ---
 
+## 4 bis. Continuer une campagne précédente
+
+Le point le plus important pour faire **converger réellement** l'échelle est de ne pas repartir de zéro à chaque campagne.
+
+Le classement final d'un benchmark peut être réutilisé directement comme état initial du suivant :
+
+```bash
+bash scripts/chess.sh elo-benchmark \
+  --ratings-in=elo-final.csv \
+  --games=8 \
+  --seed=20261001 \
+  --csv=elo-next.csv \
+  --history=elo-next-history.csv
+```
+
+Le fichier `elo-final.csv` contient déjà les colonnes `key` et `elo` nécessaires.
+
+Comportement :
+
+- un bot présent dans le fichier reprend son Elo exact ;
+- un nouveau bot absent du fichier démarre à `--initial-elo`, soit 1500 par défaut ;
+- les mises à jour reprennent ensuite normalement après chaque partie.
+
+Cela permet de faire :
+
+```text
+campagne 1
+→ campagne 2 avec les Elo de la campagne 1
+→ campagne 3 avec les Elo de la campagne 2
+→ ...
+```
+
+C'est la méthode recommandée pour laisser les écarts continuer à se développer au lieu de réinitialiser le pool.
+
+---
+
 ## 5. Sous Windows
 
 ```powershell
@@ -141,6 +181,34 @@ bash scripts/chess.sh elo-benchmark \
 ```
 
 Il faut au moins deux bots.
+
+---
+
+## 6 bis. Pourquoi augmenter K ne crée pas un « vrai 2000 »
+
+Le facteur `K` contrôle la **vitesse** des variations, pas l'origine ni la signification de l'échelle.
+
+Un K élevé :
+
+- fait monter ou descendre plus vite ;
+- converge plus rapidement au début ;
+- augmente aussi la volatilité.
+
+Un K plus faible :
+
+- évolue plus lentement ;
+- produit une échelle plus stable ;
+- demande davantage de parties.
+
+Augmenter artificiellement K pour obtenir des nombres plus grands serait donc une mauvaise calibration.
+
+La bonne combinaison est :
+
+1. une origine lisible — 1500 par défaut ;
+2. suffisamment de parties ;
+3. plusieurs seeds ;
+4. conservation des Elo entre campagnes ;
+5. même formule Elo et même K pour rendre les campagnes comparables.
 
 ---
 
@@ -238,7 +306,7 @@ Défaut :
 Option :
 
 ```text
---initial-elo=1000
+--initial-elo=1500
 ```
 
 Le niveau absolu importe moins que les **écarts** et l'ordre final.
@@ -401,6 +469,26 @@ le planning et les résultats pseudo-aléatoires sont reproductibles.
 
 La CI vérifie également la reproductibilité de l'historique Elo sur des bots déterministes de test.
 
+
+---
+
+## 18 bis. Ce que signifie un bot à 2000 IRIS-Elo
+
+Avec l'origine actuelle à 1500, un bot peut tout à fait dépasser 2000 si ses résultats justifient un écart suffisamment grand avec le pool.
+
+Par exemple, un écart Elo de 400 points correspond à un score attendu d'environ :
+
+```text
+91 %
+```
+
+Un bot autour de 2050 face à un adversaire à 1650 est donc censé marquer environ neuf points sur dix à long terme.
+
+Cela donne des écarts numériquement significatifs **sans modifier la formule Elo**.
+
+En revanche, 2000 IRIS-Elo ne signifie toujours pas automatiquement « 2000 FIDE ».
+
+Pour créer un pont vers une échelle FIDE, il faudrait introduire des **ancres externes** : moteurs UCI ou adversaires dont le niveau a été calibré indépendamment. C'est une extension possible du framework.
 
 ---
 
