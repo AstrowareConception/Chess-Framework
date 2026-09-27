@@ -346,6 +346,8 @@ bash scripts/chess.sh console student-deep-rabbit minimax --isolated --timeout-m
 
 Chaque bot tourne alors dans sa propre JVM.
 
+L'isolation est automatique pour un bot étudiant : le flag `--isolated` reste recommandé dans les exemples pour rendre la condition de tournoi visible, mais le framework force cette protection si un bot `student-*` est détecté.
+
 Une décision qui dépasse le timeout entraîne un forfait au lieu de bloquer le tournoi.
 
 ---
