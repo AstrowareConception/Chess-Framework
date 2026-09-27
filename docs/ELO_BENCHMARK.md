@@ -189,9 +189,9 @@ bash scripts/chess.sh elo-benchmark \
   --heap-mb=256
 ```
 
-L'isolation est recommandée pour les bots étudiants.
+L'isolation est **automatiquement forcée** dès qu'un bot étudiant est inclus.
 
-Pour calibrer uniquement les bots de référence fournis par le framework, l'exécution dans la JVM principale est plus rapide.
+Pour calibrer uniquement les bots de référence fournis par le framework, l'exécution dans la JVM principale reste plus rapide.
 
 ---
 
