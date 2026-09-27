@@ -282,6 +282,30 @@ Les valeurs sont provisoires et pourront être recalibrées après accumulation 
 
 ---
 
+## 11 bis. Benchmark Elo dynamique
+
+Le framework peut également calculer un IRIS-Elo à partir de résultats réels.
+
+Pour les bots de référence :
+
+```bash
+bash scripts/chess.sh elo-benchmark --games=4
+```
+
+Avec 12 bots, cela représente 264 parties.
+
+Pour situer les bots étudiants par rapport aux références après clôture :
+
+```bash
+bash scripts/chess.sh elo-benchmark --all --games=4 --isolated
+```
+
+Le classement Elo est complémentaire au classement officiel du tournoi.
+
+Voir `docs/ELO_BENCHMARK.md`.
+
+---
+
 ## 12. Tournoi officiel
 
 Une fois toutes les PR autorisées mergées, le logiciel découvre automatiquement les bots étudiants.
