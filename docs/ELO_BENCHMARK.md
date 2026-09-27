@@ -400,3 +400,22 @@ Avec :
 le planning et les résultats pseudo-aléatoires sont reproductibles.
 
 La CI vérifie également la reproductibilité de l'historique Elo sur des bots déterministes de test.
+
+
+---
+
+## 19. Campagnes archivées
+
+Les calibrations de référence sont archivées dans :
+
+```text
+docs/calibrations/
+```
+
+Première campagne :
+
+```text
+IRIS_ELO_REFERENCE_2026-09-27_SEED42.md
+```
+
+Elle contient 264 parties et constitue le premier point de comparaison empirique de l'échelle des bots de référence.
