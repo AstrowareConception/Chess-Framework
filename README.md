@@ -317,3 +317,14 @@ bash scripts/chess.sh elo-estimate student-deep-rabbit
 Par défaut, il joue 4 parties contre chaque référence, avec couleurs équilibrées. Le framework retourne un IRIS-Elo estimé et un intervalle de confiance à 95 %.
 
 Voir [docs/ELO_ESTIMATE.md](docs/ELO_ESTIMATE.md).
+
+
+### Estimer toute la promotion
+
+Après merge des bots étudiants :
+
+```bash
+bash scripts/chess.sh elo-estimate-all --games=8 --csv=iris-student-ratings.csv
+```
+
+Ou directement depuis GitHub Actions avec le workflow **Student Elo Estimates**.
