@@ -16,6 +16,8 @@ import fr.astroware.chess.tournament.match.MatchRunner;
 import fr.astroware.chess.tournament.pgn.PgnExporter;
 import fr.astroware.chess.tournament.rating.BotEloEstimate;
 import fr.astroware.chess.tournament.rating.BotEloEstimateCsvExporter;
+import fr.astroware.chess.tournament.rating.BotEloEstimateBatchCsvExporter;
+import fr.astroware.chess.tournament.rating.BotEloEstimateBatchReporter;
 import fr.astroware.chess.tournament.rating.BotEloEstimateReporter;
 import fr.astroware.chess.tournament.rating.BotEloEstimateSettings;
 import fr.astroware.chess.tournament.rating.BotEloEstimator;
@@ -96,6 +98,11 @@ public final class ChessFrameworkCli {
             return;
         }
 
+        if ("elo-estimate-all".equals(mode)) {
+            runAllStudentEloEstimates(args);
+            return;
+        }
+
         if ("validate-students".equals(mode)) {
             validateStudents();
             return;
@@ -136,6 +143,154 @@ public final class ChessFrameworkCli {
     }
 
 
+
+
+    private static void runAllStudentEloEstimates(
+        String[] args
+    ) {
+        Map<String, BotFactory> students =
+            BotCatalog.studentBots();
+
+        if (students.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Aucun bot étudiant mergé à estimer."
+            );
+        }
+
+        IsolatedBotSettings isolationSettings =
+            readIsolationSettings(args);
+
+        List<String> studentKeys =
+            new ArrayList<>(
+                students.keySet()
+            );
+
+        studentKeys.sort(
+            String::compareTo
+        );
+
+        List<String> referenceKeys =
+            readReferenceKeys(
+                args,
+                ""
+            );
+
+        List<EloReferenceOpponent> references =
+            referenceKeys.stream()
+                .map(key -> {
+                    double rating =
+                        ReferenceEloCatalog.find(key)
+                            .orElseThrow()
+                            .rating();
+
+                    return new EloReferenceOpponent(
+                        tournamentParticipant(
+                            key,
+                            false,
+                            isolationSettings
+                        ),
+                        rating
+                    );
+                })
+                .toList();
+
+        int gamesPerReference =
+            readGamesPerReference(args);
+
+        int maxPlies =
+            readMaxPlies(args);
+
+        long baseSeed =
+            readSeed(args);
+
+        double priorElo =
+            readDoubleOption(
+                args,
+                "--prior-elo=",
+                1_500.0
+            );
+
+        double priorSigma =
+            readDoubleOption(
+                args,
+                "--prior-sigma=",
+                800.0
+            );
+
+        List<BotEloEstimate> estimates =
+            new ArrayList<>();
+
+        int index = 0;
+
+        for (String studentKey
+            : studentKeys) {
+
+            index++;
+
+            TournamentParticipant target =
+                tournamentParticipant(
+                    studentKey,
+                    true,
+                    isolationSettings
+                );
+
+            long seed =
+                baseSeed
+                    ^ (
+                        0x9E3779B97F4A7C15L
+                            * index
+                    );
+
+            BotEloEstimate estimate =
+                new BotEloEstimator()
+                    .estimate(
+                        target,
+                        references,
+                        new BotEloEstimateSettings(
+                            gamesPerReference,
+                            maxPlies,
+                            seed,
+                            priorElo,
+                            priorSigma
+                        )
+                    );
+
+            estimates.add(estimate);
+
+            System.out.printf(
+                Locale.ROOT,
+                "[%d/%d] %s : %.0f IRIS-Elo (IC95 %.0f — %.0f)%n",
+                index,
+                studentKeys.size(),
+                estimate.bot()
+                    .botName(),
+                estimate.estimatedRating(),
+                estimate.confidence95Low(),
+                estimate.confidence95High()
+            );
+        }
+
+        new BotEloEstimateBatchReporter()
+            .print(estimates);
+
+        for (String arg : args) {
+            if (arg.startsWith("--csv=")) {
+                Path path =
+                    Path.of(
+                        arg.substring(
+                            "--csv=".length()
+                        )
+                    );
+
+                writeUtf8(
+                    path,
+                    new BotEloEstimateBatchCsvExporter()
+                        .export(estimates),
+                    "estimations Elo étudiantes"
+                );
+            }
+        }
+    }
 
     private static void runEloEstimate(
         String[] args
@@ -1254,6 +1409,7 @@ public final class ChessFrameworkCli {
               ratings
               elo-benchmark [bot1 bot2 ...] [--students|--all] [options]
               elo-estimate <bot> [options]
+              elo-estimate-all [options]
               validate-students
               console <blancs> <noirs> [options]
               pgn     <blancs> <noirs> [fichier.pgn] [options]
@@ -1301,6 +1457,7 @@ public final class ChessFrameworkCli {
               elo-benchmark --students --games=8 --isolated
               elo-estimate student-deep-rabbit --games=4
               elo-estimate student-deep-rabbit --refs=random,tactical,guardian,minimax,lookahead --games=8 --csv=deep-rabbit-elo.csv
+              elo-estimate-all --games=4 --csv=iris-student-ratings.csv
               tournament tactical positional --pgn=parties.pgn --csv=classement.csv
 
             Utilisez :
