@@ -259,3 +259,41 @@ Voir `docs/TOURNAMENT.md`.
 
 
 Chaque coup conserve également son temps de décision en millisecondes. La console et le viewer Swing affichent cette information pour comparer le coût des stratégies.
+
+
+---
+
+## 11. Benchmark IRIS-Elo dynamique
+
+Le CLI peut calibrer plusieurs bots par centaines de parties :
+
+```bash
+bash scripts/chess.sh elo-benchmark --games=4
+```
+
+Avec 12 bots de référence, 4 parties par paire produisent **264 parties**.
+
+Pour exporter :
+
+```bash
+bash scripts/chess.sh elo-benchmark \
+  --games=4 \
+  --csv=elo-final.csv \
+  --history=elo-history.csv
+```
+
+Population possible :
+
+```text
+aucun flag  -> bots de référence
+--students  -> bots étudiants uniquement
+--all       -> références + étudiants
+```
+
+On peut également donner une liste explicite :
+
+```bash
+bash scripts/chess.sh elo-benchmark random greedy tactical --games=8
+```
+
+Voir `docs/ELO_BENCHMARK.md`.
