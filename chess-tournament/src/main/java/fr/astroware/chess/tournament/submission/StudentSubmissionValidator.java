@@ -246,9 +246,6 @@ public final class StudentSubmissionValidator {
         String normalized =
             botName.toLowerCase(Locale.ROOT);
 
-        String normalizedAuthor =
-            author.toLowerCase(Locale.ROOT);
-
         if (reservedNames.contains(normalized)) {
             throw new IllegalStateException(
                 "le nom de bot '"
@@ -265,21 +262,10 @@ public final class StudentSubmissionValidator {
             );
         }
 
-        if (!studentAuthors.add(normalizedAuthor)) {
-            throw new IllegalStateException(
-                "l'auteur '"
-                    + author
-                    + "' possède déjà un autre bot. "
-                    + "Le tournoi IRIS Nice autorise un seul bot par participant."
-            );
-        }
-
-        if (!author.contains(" ")) {
-            throw new IllegalStateException(
-                "authorName doit contenir le nom complet du participant "
-                    + "(prénom et nom)"
-            );
-        }
+        StudentTournamentPolicy.requireUniqueParticipant(
+            metadata,
+            studentAuthors
+        );
 
         if (!botClass.getPackageName()
             .equals(
