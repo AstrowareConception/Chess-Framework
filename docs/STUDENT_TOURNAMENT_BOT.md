@@ -2,6 +2,12 @@
 
 Ce guide décrit le workflow complet d'une **soumission étudiante** : création du bot, tests, validation locale, Pull Request et intégration automatique au tournoi.
 
+Le règlement officiel du tournoi IRIS Nice est dans :
+
+```text
+docs/IRIS_NICE_TOURNAMENT_RULES.md
+```
+
 L'objectif est qu'une soumission valide ne nécessite **aucune modification manuelle du framework** après son merge.
 
 Les exemples de lancement utilisent Bash. Sous Windows, remplacez `bash scripts/chess.sh` par `powershell -ExecutionPolicy Bypass -File scripts/chess.ps1`.
@@ -344,6 +350,38 @@ Une décision qui dépasse le timeout entraîne un forfait au lieu de bloquer le
 
 ---
 
+## 11 bis. Choisir un adversaire avec l'IRIS-Elo
+
+Les bots de référence sont classés sur une échelle pédagogique appelée **IRIS-Elo**.
+
+```bash
+bash scripts/chess.sh ratings
+```
+
+Sous Windows :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/chess.ps1 ratings
+```
+
+Cette valeur ne correspond pas à un Elo FIDE. Elle sert uniquement à choisir une difficulté progressive.
+
+Exemple de progression :
+
+```text
+Random      ~ 400
+Greedy      ~ 600
+Guardian    ~ 825
+Tactical    ~ 1000
+Positional  ~ 1200
+Lookahead   ~ 1300
+Minimax     ~ 1400
+```
+
+Une bonne méthode de travail consiste à faire progresser son bot dans cette échelle plutôt que de ne tester que contre RandomBot.
+
+---
+
 ## 12. Faire un mini-tournoi local
 
 ```bash
@@ -442,8 +480,11 @@ console
 pgn
 gui
 tournament
+tournament --students
 tournament --all
 ```
+
+Le jour du tournoi IRIS Nice, `tournament --students` sélectionne automatiquement uniquement les bots étudiants mergés et validés.
 
 Il n'y a pas de registre manuel à maintenir après chaque merge.
 
