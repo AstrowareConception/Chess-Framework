@@ -148,6 +148,19 @@ public final class ChessFrameworkCli {
         List<String> requestedBots =
             tournamentBotNames(args);
 
+        isolated = isolated
+            || studentsOnly
+            || requestedBots.stream()
+                .anyMatch(name ->
+                    name.toLowerCase(Locale.ROOT)
+                        .startsWith("student-")
+                )
+            || (
+                all
+                    && !BotCatalog.studentBots()
+                        .isEmpty()
+            );
+
         List<String> keys;
 
         if (studentsOnly) {
@@ -487,6 +500,19 @@ public final class ChessFrameworkCli {
 
         boolean studentsOnly =
             hasFlag(args, "--students");
+
+        isolated = isolated
+            || studentsOnly
+            || requestedBots.stream()
+                .anyMatch(name ->
+                    name.toLowerCase(Locale.ROOT)
+                        .startsWith("student-")
+                )
+            || (
+                all
+                    && !BotCatalog.studentBots()
+                        .isEmpty()
+            );
 
         if (all && studentsOnly) {
             throw new IllegalArgumentException(
