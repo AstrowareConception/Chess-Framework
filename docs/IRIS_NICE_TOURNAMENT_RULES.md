@@ -272,16 +272,18 @@ bash scripts/chess.sh ratings
 Exemples de calibration actuelle :
 
 ```text
-Random      840
-Architect   886
-Greedy      955
-Tactical    1038
-Guardian    1057
-Minimax     1129
-Lookahead   1152
+Random      1340
+Architect   1386
+Greedy      1455
+Tactical    1538
+Guardian    1557
+Minimax     1629
+Lookahead   1652
 ```
 
-Ces valeurs proviennent d'une campagne de **528 parties**. Elles peuvent évoluer si le code des bots de référence change ou après une nouvelle calibration.
+Ces valeurs proviennent d'une campagne de **528 parties** puis d'une translation globale de +500 points, mathématiquement neutre. Elles peuvent évoluer si le code des bots de référence change ou après une nouvelle calibration.
+
+Les campagnes Elo peuvent être chaînées avec `--ratings-in` afin de conserver l'évolution du classement d'une campagne à la suivante.
 
 ---
 
