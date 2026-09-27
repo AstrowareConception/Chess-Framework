@@ -14,6 +14,11 @@ import fr.astroware.chess.tournament.match.MatchConfiguration;
 import fr.astroware.chess.tournament.match.MatchResult;
 import fr.astroware.chess.tournament.match.MatchRunner;
 import fr.astroware.chess.tournament.pgn.PgnExporter;
+import fr.astroware.chess.tournament.rating.EloBenchmark;
+import fr.astroware.chess.tournament.rating.EloBenchmarkCsvExporter;
+import fr.astroware.chess.tournament.rating.EloBenchmarkReporter;
+import fr.astroware.chess.tournament.rating.EloBenchmarkResult;
+import fr.astroware.chess.tournament.rating.EloBenchmarkSettings;
 import fr.astroware.chess.tournament.rating.ReferenceEloCatalog;
 import fr.astroware.chess.tournament.roundrobin.RoundRobinConfiguration;
 import fr.astroware.chess.tournament.roundrobin.RoundRobinPgnExporter;
@@ -74,6 +79,11 @@ public final class ChessFrameworkCli {
             return;
         }
 
+        if ("elo-benchmark".equals(mode)) {
+            runEloBenchmark(args);
+            return;
+        }
+
         if ("validate-students".equals(mode)) {
             validateStudents();
             return;
@@ -110,6 +120,237 @@ public final class ChessFrameworkCli {
                 bot.metadata().authorName(),
                 bot.className()
             )
+        );
+    }
+
+
+    private static void runEloBenchmark(
+        String[] args
+    ) {
+        boolean isolated =
+            hasFlag(args, "--isolated");
+
+        IsolatedBotSettings isolationSettings =
+            readIsolationSettings(args);
+
+        boolean all =
+            hasFlag(args, "--all");
+
+        boolean studentsOnly =
+            hasFlag(args, "--students");
+
+        if (all && studentsOnly) {
+            throw new IllegalArgumentException(
+                "Utilisez soit --all, soit --students, pas les deux."
+            );
+        }
+
+        Map<String, BotFactory> source;
+
+        if (studentsOnly) {
+            source = BotCatalog.studentBots();
+
+            if (source.size() < 2) {
+                throw new IllegalArgumentException(
+                    "Le benchmark étudiant nécessite au moins deux bots étudiants mergés."
+                );
+            }
+        } else if (all) {
+            source = BotCatalog.all();
+        } else {
+            source = BotCatalog.referenceBots();
+        }
+
+        List<String> keys =
+            new ArrayList<>(source.keySet());
+
+        keys.sort(String::compareTo);
+
+        List<TournamentParticipant> participants =
+            keys.stream()
+                .map(key ->
+                    tournamentParticipant(
+                        key,
+                        isolated,
+                        isolationSettings
+                    )
+                )
+                .toList();
+
+        EloBenchmarkSettings settings =
+            new EloBenchmarkSettings(
+                readDoubleOption(
+                    args,
+                    "--initial-elo=",
+                    1_000.0
+                ),
+                readDoubleOption(
+                    args,
+                    "--k=",
+                    24.0
+                ),
+                readGamesPerPairForElo(args),
+                readMaxPlies(args),
+                readSeed(args)
+            );
+
+        int expectedGames =
+            settings.expectedGameCount(
+                participants.size()
+            );
+
+        System.out.printf(
+            Locale.ROOT,
+            "Benchmark Elo : %d bots, %d parties, %.0f Elo initial, K=%.1f%n",
+            participants.size(),
+            expectedGames,
+            settings.initialRating(),
+            settings.kFactor()
+        );
+
+        if (isolated) {
+            printIsolationSettings(
+                isolationSettings
+            );
+        }
+
+        EloBenchmarkReporter reporter =
+            new EloBenchmarkReporter();
+
+        EloBenchmarkResult result =
+            new EloBenchmark().run(
+                participants,
+                settings,
+                record ->
+                    reporter.printProgress(
+                        record,
+                        expectedGames
+                    )
+            );
+
+        reporter.print(result);
+
+        writeEloExports(
+            args,
+            result
+        );
+    }
+
+    private static int readGamesPerPairForElo(
+        String[] args
+    ) {
+        int value =
+            readPositiveIntOption(
+                args,
+                "--games=",
+                4
+            );
+
+        if (value % 2 != 0) {
+            throw new IllegalArgumentException(
+                "--games doit être pair pour équilibrer les couleurs dans le benchmark Elo"
+            );
+        }
+
+        return value;
+    }
+
+    private static double readDoubleOption(
+        String[] args,
+        String prefix,
+        double defaultValue
+    ) {
+        for (String arg : args) {
+            if (arg.startsWith(prefix)) {
+                double value =
+                    Double.parseDouble(
+                        arg.substring(
+                            prefix.length()
+                        )
+                    );
+
+                if (!Double.isFinite(value)
+                    || value <= 0.0) {
+                    throw new IllegalArgumentException(
+                        prefix
+                            + " doit être strictement positif"
+                    );
+                }
+
+                return value;
+            }
+        }
+
+        return defaultValue;
+    }
+
+    private static void writeEloExports(
+        String[] args,
+        EloBenchmarkResult result
+    ) {
+        EloBenchmarkCsvExporter exporter =
+            new EloBenchmarkCsvExporter();
+
+        for (String arg : args) {
+            if (arg.startsWith("--csv=")) {
+                Path path = Path.of(
+                    arg.substring(
+                        "--csv=".length()
+                    )
+                );
+
+                writeUtf8(
+                    path,
+                    exporter.finalStandings(
+                        result
+                    ),
+                    "classement Elo"
+                );
+            }
+
+            if (arg.startsWith("--history=")) {
+                Path path = Path.of(
+                    arg.substring(
+                        "--history=".length()
+                    )
+                );
+
+                writeUtf8(
+                    path,
+                    exporter.history(
+                        result
+                    ),
+                    "historique Elo"
+                );
+            }
+        }
+    }
+
+    private static void writeUtf8(
+        Path path,
+        String content,
+        String label
+    ) {
+        try {
+            Files.writeString(
+                path,
+                content,
+                StandardCharsets.UTF_8
+            );
+        } catch (IOException exception) {
+            throw new IllegalStateException(
+                "Impossible d'écrire "
+                    + label
+                    + " : "
+                    + path,
+                exception
+            );
+        }
+
+        System.out.println(
+            label
+                + " : "
+                + path.toAbsolutePath()
         );
     }
 
@@ -703,6 +944,7 @@ public final class ChessFrameworkCli {
             Usage :
               list
               ratings
+              elo-benchmark [--students|--all] [options]
               validate-students
               console <blancs> <noirs> [options]
               pgn     <blancs> <noirs> [fichier.pgn] [options]
@@ -726,6 +968,13 @@ public final class ChessFrameworkCli {
               --pgn=parties.pgn
               --csv=classement.csv
 
+            Benchmark Elo :
+              --games=N          nombre pair de parties par paire (défaut 4)
+              --initial-elo=N    Elo initial commun (défaut 1000)
+              --k=N              facteur K (défaut 24)
+              --csv=elo.csv      classement final
+              --history=hist.csv historique match par match
+
             Exemples :
               console tactical random
               console minimax random --isolated
@@ -736,6 +985,8 @@ public final class ChessFrameworkCli {
               tournament positional lookahead minimax --games=2 --isolated
               tournament --students --games=4 --isolated
               tournament --all --games=2 --isolated --timeout-ms=3000
+              elo-benchmark --games=4 --csv=elo.csv --history=elo-history.csv
+              elo-benchmark --students --games=8 --isolated
               tournament tactical positional --pgn=parties.pgn --csv=classement.csv
 
             Utilisez :
