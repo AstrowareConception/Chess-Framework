@@ -368,16 +368,16 @@ powershell -ExecutionPolicy Bypass -File scripts/chess.ps1 ratings
 
 Cette valeur ne correspond pas à un Elo FIDE. Elle sert uniquement à choisir une difficulté progressive.
 
-Exemple de progression :
+Exemple de progression calibrée :
 
 ```text
-Random      ~ 400
-Greedy      ~ 600
-Guardian    ~ 825
-Tactical    ~ 1000
-Positional  ~ 1200
-Lookahead   ~ 1300
-Minimax     ~ 1400
+Random      840
+Architect   886
+Greedy      955
+Tactical    1038
+Guardian    1057
+Minimax     1129
+Lookahead   1152
 ```
 
 Une bonne méthode de travail consiste à faire progresser son bot dans cette échelle plutôt que de ne tester que contre RandomBot.
