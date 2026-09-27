@@ -105,6 +105,7 @@ Elle est volontairement distincte de la roadmap : les extensions futures — UCI
 - [x] incidents exploitables ;
 - [x] benchmark IRIS-Elo dynamique avec mise à jour après chaque partie ;
 - [x] estimation IRIS-Elo individuelle contre références calibrées ;
+- [x] estimation batch de tous les bots étudiants mergés ;
 - [x] intervalle de confiance à 95 % pour l'estimation d'un bot ;
 - [x] export du classement Elo et de l'historique match par match.
 
