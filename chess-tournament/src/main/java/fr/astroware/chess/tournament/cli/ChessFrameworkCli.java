@@ -14,6 +14,7 @@ import fr.astroware.chess.tournament.match.MatchConfiguration;
 import fr.astroware.chess.tournament.match.MatchResult;
 import fr.astroware.chess.tournament.match.MatchRunner;
 import fr.astroware.chess.tournament.pgn.PgnExporter;
+import fr.astroware.chess.tournament.rating.ReferenceEloCatalog;
 import fr.astroware.chess.tournament.roundrobin.RoundRobinConfiguration;
 import fr.astroware.chess.tournament.roundrobin.RoundRobinPgnExporter;
 import fr.astroware.chess.tournament.roundrobin.RoundRobinResult;
@@ -57,6 +58,11 @@ public final class ChessFrameworkCli {
 
         if ("list".equalsIgnoreCase(args[0])) {
             printBots();
+            return;
+        }
+
+        if ("ratings".equalsIgnoreCase(args[0])) {
+            printRatings();
             return;
         }
 
@@ -220,9 +226,29 @@ public final class ChessFrameworkCli {
         boolean all =
             hasFlag(args, "--all");
 
+        boolean studentsOnly =
+            hasFlag(args, "--students");
+
+        if (all && studentsOnly) {
+            throw new IllegalArgumentException(
+                "Utilisez soit --all, soit --students, pas les deux."
+            );
+        }
+
         List<String> botNames;
 
-        if (all) {
+        if (studentsOnly) {
+            botNames = new ArrayList<>(
+                BotCatalog.studentBots().keySet()
+            );
+            botNames.sort(String::compareTo);
+
+            if (botNames.size() < 2) {
+                throw new IllegalArgumentException(
+                    "Le tournoi étudiant nécessite au moins deux bots étudiants mergés."
+                );
+            }
+        } else if (all) {
             botNames = new ArrayList<>(
                 BotCatalog.all().keySet()
             );
@@ -603,6 +629,38 @@ public final class ChessFrameworkCli {
         );
     }
 
+    private static void printRatings() {
+        System.out.println(
+            "IRIS-Elo provisoire des bots de référence"
+        );
+        System.out.println(
+            "(échelle pédagogique interne, sans équivalence FIDE)"
+        );
+        System.out.println();
+
+        ReferenceEloCatalog.all()
+            .entrySet()
+            .stream()
+            .sorted(
+                Map.Entry.comparingByValue(
+                    java.util.Comparator.comparingInt(
+                        rating ->
+                            rating.rating()
+                    )
+                )
+            )
+            .forEach(entry ->
+                System.out.printf(
+                    Locale.ROOT,
+                    "  %-12s %4d  %-13s — %s%n",
+                    entry.getKey(),
+                    entry.getValue().rating(),
+                    entry.getValue().level(),
+                    entry.getValue().explanation()
+                )
+            );
+    }
+
     private static void printBots() {
         System.out.println(
             "Bots disponibles :"
@@ -617,10 +675,21 @@ public final class ChessFrameworkCli {
                     .create()
                     .metadata();
 
+            String rating =
+                ReferenceEloCatalog.find(
+                    entry.getKey()
+                )
+                .map(value ->
+                    " — IRIS-Elo "
+                        + value.rating()
+                )
+                .orElse("");
+
             System.out.printf(
-                "  %-12s %-20s — %s%n",
+                "  %-22s %-20s%s — %s%n",
                 entry.getKey(),
                 metadata.botName(),
+                rating,
                 metadata.description()
             );
         }
@@ -633,11 +702,13 @@ public final class ChessFrameworkCli {
 
             Usage :
               list
+              ratings
               validate-students
               console <blancs> <noirs> [options]
               pgn     <blancs> <noirs> [fichier.pgn] [options]
               gui     <blancs> <noirs> [options]
               tournament <bot1> <bot2> [...] [options]
+              tournament --students [options]
               tournament --all [options]
 
             Options communes :
@@ -663,6 +734,7 @@ public final class ChessFrameworkCli {
               gui architect tactical --isolated
               tournament random greedy tactical
               tournament positional lookahead minimax --games=2 --isolated
+              tournament --students --games=4 --isolated
               tournament --all --games=2 --isolated --timeout-ms=3000
               tournament tactical positional --pgn=parties.pgn --csv=classement.csv
 
