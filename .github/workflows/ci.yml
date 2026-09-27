@@ -124,6 +124,15 @@ jobs:
           grep -q "estimated_elo" /tmp/student-elo-estimate.csv
           grep -q "student-ci-smoke" /tmp/student-elo-estimate.csv
 
+      - name: Smoke-test batch student Elo estimates
+        run: |
+          bash scripts/chess.sh elo-estimate-all --refs=random,greedy --games=2 --max-plies=4 --seed=789 --timeout-ms=2000 --heap-mb=128 --csv=/tmp/student-elo-all.csv | tee /tmp/student-elo-all.txt
+          test -s /tmp/student-elo-all.csv
+          grep -q "CI Smoke" /tmp/student-elo-all.csv
+          grep -q "CI Second" /tmp/student-elo-all.csv
+          grep -q "estimated_elo" /tmp/student-elo-all.csv
+          grep -q "ESTIMATIONS IRIS-ELO ÉTUDIANTES" /tmp/student-elo-all.txt
+
   student-workflow-windows:
     name: Student workflow — Windows
     runs-on: windows-latest
