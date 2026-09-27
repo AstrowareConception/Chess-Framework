@@ -69,8 +69,10 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Scaffold a student bot
-        run: bash scripts/new-student-bot.sh CiSmokeBot "CI Student" "CI Smoke" "Bot généré par le smoke-test du parcours étudiant."
+      - name: Scaffold student bots
+        run: |
+          bash scripts/new-student-bot.sh CiSmokeBot "CI Student One" "CI Smoke" "Premier bot généré par le smoke-test du parcours étudiant."
+          bash scripts/new-student-bot.sh CiSecondBot "CI Student Two" "CI Second" "Second bot généré pour tester le tournoi étudiant automatique."
 
       - name: Build student bot and executable runner
         run: mvn --batch-mode --no-transfer-progress verify
@@ -79,11 +81,13 @@ jobs:
         run: |
           bash scripts/chess.sh validate-students | tee /tmp/validate-students.txt
           grep -q "CI Smoke" /tmp/validate-students.txt
+          grep -q "CI Second" /tmp/validate-students.txt
 
       - name: Verify automatic catalog registration
         run: |
           bash scripts/chess.sh list | tee /tmp/bot-list.txt
           grep -q "student-ci-smoke" /tmp/bot-list.txt
+          grep -q "student-ci-second" /tmp/bot-list.txt
 
       - name: Play isolated student duel
         run: bash scripts/chess.sh console student-ci-smoke random --isolated --max-plies=4 --timeout-ms=2000 --heap-mb=128
@@ -94,6 +98,14 @@ jobs:
           test -s /tmp/student-smoke.pgn
           test -s /tmp/student-smoke.csv
           grep -q "CI Smoke" /tmp/student-smoke.csv
+
+      - name: Run official student-only tournament mode
+        run: |
+          bash scripts/chess.sh tournament --students --games=2 --isolated --max-plies=4 --timeout-ms=2000 --heap-mb=128 --pgn=/tmp/iris-students.pgn --csv=/tmp/iris-students.csv
+          test -s /tmp/iris-students.pgn
+          test -s /tmp/iris-students.csv
+          grep -q "CI Smoke" /tmp/iris-students.csv
+          grep -q "CI Second" /tmp/iris-students.csv
 
   student-workflow-windows:
     name: Student workflow — Windows
