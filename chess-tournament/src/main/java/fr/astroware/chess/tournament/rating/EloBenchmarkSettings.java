@@ -54,7 +54,7 @@ public record EloBenchmarkSettings(
         long seed
     ) {
         return new EloBenchmarkSettings(
-            1_000.0,
+            1_500.0,
             24.0,
             4,
             400,
