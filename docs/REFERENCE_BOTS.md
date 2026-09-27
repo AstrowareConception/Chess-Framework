@@ -1,25 +1,25 @@
 # Bots de référence et bots de test
 
-## Échelle IRIS-Elo provisoire
+## Échelle IRIS-Elo calibrée
 
-Les bots de référence disposent d'une **échelle de difficulté pédagogique interne**.
+Les bots de référence disposent maintenant d'une **échelle empirique interne**, issue d'une campagne de 528 parties.
 
-> **Important :** l'IRIS-Elo n'est pas un Elo FIDE et ne correspond pas au niveau d'un joueur humain. Il sert uniquement à choisir des adversaires de difficulté progressive dans Chess Framework.
+> **Important :** l'IRIS-Elo n'est pas un Elo FIDE et ne correspond pas au niveau d'un joueur humain. Il sert uniquement à positionner les bots Chess Framework les uns par rapport aux autres.
 
 | Clé CLI | Bot | IRIS-Elo | Niveau |
 |---|---|---:|---|
-| `random` | RandomBot | 400 | Découverte |
-| `greedy` | GreedyBot | 600 | Débutant |
-| `berserker` | BerserkerBot | 700 | Agressif |
-| `cautious` | CautiousBot | 750 | Prudent |
-| `guardian` | GuardianBot | 825 | Défensif |
-| `architect` | SolidPlannerBot | 900 | Planificateur |
-| `tactical` | TacticalBot | 1000 | Tactique |
-| `pressure` | PressureBot | 1075 | Pression |
-| `chameleon` | ChameleonBot | 1125 | Adaptatif |
-| `positional` | PositionalBot | 1200 | Positionnel |
-| `lookahead` | LookaheadBot | 1300 | Anticipation |
-| `minimax` | MinimaxBot | 1400 | Recherche |
+| `random` | RandomBot | 840 | Découverte |
+| `architect` | SolidPlannerBot | 886 | Planificateur |
+| `berserker` | BerserkerBot | 951 | Agressif |
+| `greedy` | GreedyBot | 955 | Matérialiste |
+| `pressure` | PressureBot | 962 | Pression |
+| `chameleon` | ChameleonBot | 997 | Adaptatif |
+| `positional` | PositionalBot | 1008 | Positionnel |
+| `cautious` | CautiousBot | 1024 | Prudent |
+| `tactical` | TacticalBot | 1038 | Tactique |
+| `guardian` | GuardianBot | 1057 | Défensif |
+| `minimax` | MinimaxBot | 1129 | Recherche |
+| `lookahead` | LookaheadBot | 1152 | Anticipation |
 
 Afficher l'échelle depuis le CLI :
 
@@ -27,7 +27,7 @@ Afficher l'échelle depuis le CLI :
 bash scripts/chess.sh ratings
 ```
 
-Les valeurs sont **provisoires**. Le framework possède maintenant un benchmark Elo dynamique qui repart de 1000 pour tous les bots et recalcule leur hiérarchie à partir de centaines de parties réelles.
+Les valeurs affichées ci-dessus sont issues de la seconde campagne de calibration : 528 parties, 8 parties par paire, seed 20260927, K=24.
 
 Voir `docs/ELO_BENCHMARK.md`.
 
