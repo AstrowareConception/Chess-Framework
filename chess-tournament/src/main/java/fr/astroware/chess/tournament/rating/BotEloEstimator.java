@@ -198,7 +198,7 @@ public final class BotEloEstimator {
         );
     }
 
-    private static double estimateRating(
+    static double estimateRating(
         List<BotEloReferenceResult> results,
         BotEloEstimateSettings settings
     ) {
@@ -266,7 +266,7 @@ public final class BotEloEstimator {
             - priorPart;
     }
 
-    private static double standardError(
+    static double standardError(
         double rating,
         List<BotEloReferenceResult> results,
         BotEloEstimateSettings settings
