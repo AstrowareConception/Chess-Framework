@@ -148,18 +148,19 @@ public final class ChessFrameworkCli {
         List<String> requestedBots =
             tournamentBotNames(args);
 
-        isolated = isolated
-            || studentsOnly
-            || requestedBots.stream()
-                .anyMatch(name ->
-                    name.toLowerCase(Locale.ROOT)
-                        .startsWith("student-")
-                )
-            || (
-                all
-                    && !BotCatalog.studentBots()
-                        .isEmpty()
-            );
+        final boolean effectiveIsolation =
+            isolated
+                || studentsOnly
+                || requestedBots.stream()
+                    .anyMatch(name ->
+                        name.toLowerCase(Locale.ROOT)
+                            .startsWith("student-")
+                    )
+                || (
+                    all
+                        && !BotCatalog.studentBots()
+                            .isEmpty()
+                );
 
         List<String> keys;
 
@@ -202,7 +203,7 @@ public final class ChessFrameworkCli {
                 .map(key ->
                     tournamentParticipant(
                         key,
-                        isolated,
+                        effectiveIsolation,
                         isolationSettings
                     )
                 )
@@ -239,7 +240,7 @@ public final class ChessFrameworkCli {
             settings.kFactor()
         );
 
-        if (isolated) {
+        if (effectiveIsolation) {
             printIsolationSettings(
                 isolationSettings
             );
@@ -501,18 +502,19 @@ public final class ChessFrameworkCli {
         boolean studentsOnly =
             hasFlag(args, "--students");
 
-        isolated = isolated
-            || studentsOnly
-            || requestedBots.stream()
-                .anyMatch(name ->
-                    name.toLowerCase(Locale.ROOT)
-                        .startsWith("student-")
-                )
-            || (
-                all
-                    && !BotCatalog.studentBots()
-                        .isEmpty()
-            );
+        final boolean effectiveIsolation =
+            isolated
+                || studentsOnly
+                || requestedBots.stream()
+                    .anyMatch(name ->
+                        name.toLowerCase(Locale.ROOT)
+                            .startsWith("student-")
+                    )
+                || (
+                    all
+                        && !BotCatalog.studentBots()
+                            .isEmpty()
+                );
 
         if (all && studentsOnly) {
             throw new IllegalArgumentException(
@@ -556,13 +558,13 @@ public final class ChessFrameworkCli {
                 .map(name ->
                     tournamentParticipant(
                         name,
-                        isolated,
+                        effectiveIsolation,
                         isolationSettings
                     )
                 )
                 .toList();
 
-        if (isolated) {
+        if (effectiveIsolation) {
             printIsolationSettings(
                 isolationSettings
             );
