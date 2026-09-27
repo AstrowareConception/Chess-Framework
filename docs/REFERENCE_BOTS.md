@@ -27,7 +27,9 @@ Afficher l'échelle depuis le CLI :
 bash scripts/chess.sh ratings
 ```
 
-Les valeurs sont **provisoires** et pourront être recalibrées après accumulation de résultats réels.
+Les valeurs sont **provisoires**. Le framework possède maintenant un benchmark Elo dynamique qui repart de 1000 pour tous les bots et recalcule leur hiérarchie à partir de centaines de parties réelles.
+
+Voir `docs/ELO_BENCHMARK.md`.
 
 ---
 
