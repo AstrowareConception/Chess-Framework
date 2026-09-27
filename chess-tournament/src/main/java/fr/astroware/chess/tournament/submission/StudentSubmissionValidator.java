@@ -53,6 +53,9 @@ public final class StudentSubmissionValidator {
         Set<String> studentNames =
             new HashSet<>();
 
+        Set<String> studentAuthors =
+            new HashSet<>();
+
         List<ValidatedBot> validated =
             new ArrayList<>();
 
@@ -72,7 +75,8 @@ public final class StudentSubmissionValidator {
                     botClass,
                     metadata,
                     reservedNames,
-                    studentNames
+                    studentNames,
+                    studentAuthors
                 );
 
                 validated.add(
@@ -209,7 +213,8 @@ public final class StudentSubmissionValidator {
         Class<? extends ChessBot> botClass,
         BotMetadata metadata,
         Set<String> reservedNames,
-        Set<String> studentNames
+        Set<String> studentNames,
+        Set<String> studentAuthors
     ) {
         String botName =
             metadata.botName().trim();
@@ -241,6 +246,9 @@ public final class StudentSubmissionValidator {
         String normalized =
             botName.toLowerCase(Locale.ROOT);
 
+        String normalizedAuthor =
+            author.toLowerCase(Locale.ROOT);
+
         if (reservedNames.contains(normalized)) {
             throw new IllegalStateException(
                 "le nom de bot '"
@@ -254,6 +262,22 @@ public final class StudentSubmissionValidator {
                 "le nom de bot '"
                     + botName
                     + "' est déjà utilisé par une autre soumission"
+            );
+        }
+
+        if (!studentAuthors.add(normalizedAuthor)) {
+            throw new IllegalStateException(
+                "l'auteur '"
+                    + author
+                    + "' possède déjà un autre bot. "
+                    + "Le tournoi IRIS Nice autorise un seul bot par participant."
+            );
+        }
+
+        if (!author.contains(" ")) {
+            throw new IllegalStateException(
+                "authorName doit contenir le nom complet du participant "
+                    + "(prénom et nom)"
             );
         }
 
