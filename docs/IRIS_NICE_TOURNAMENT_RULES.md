@@ -307,7 +307,15 @@ bash scripts/chess.sh elo-benchmark --all --games=4 --isolated
 
 Le classement Elo est complémentaire au classement officiel du tournoi.
 
-Voir `docs/ELO_BENCHMARK.md`.
+Après clôture des Pull Requests, l'organisateur peut également produire une estimation individuelle de tous les participants face aux références calibrées :
+
+```bash
+bash scripts/chess.sh elo-estimate-all --games=8 --csv=iris-student-ratings.csv
+```
+
+Cela fournit un IRIS-Elo estimé et un intervalle de confiance pour chaque bot étudiant.
+
+Voir `docs/ELO_BENCHMARK.md` et `docs/ELO_ESTIMATE.md`.
 
 ---
 
