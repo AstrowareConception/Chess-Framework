@@ -1,5 +1,36 @@
 # Bots de référence et bots de test
 
+## Échelle IRIS-Elo provisoire
+
+Les bots de référence disposent d'une **échelle de difficulté pédagogique interne**.
+
+> **Important :** l'IRIS-Elo n'est pas un Elo FIDE et ne correspond pas au niveau d'un joueur humain. Il sert uniquement à choisir des adversaires de difficulté progressive dans Chess Framework.
+
+| Clé CLI | Bot | IRIS-Elo | Niveau |
+|---|---|---:|---|
+| `random` | RandomBot | 400 | Découverte |
+| `greedy` | GreedyBot | 600 | Débutant |
+| `berserker` | BerserkerBot | 700 | Agressif |
+| `cautious` | CautiousBot | 750 | Prudent |
+| `guardian` | GuardianBot | 825 | Défensif |
+| `architect` | SolidPlannerBot | 900 | Planificateur |
+| `tactical` | TacticalBot | 1000 | Tactique |
+| `pressure` | PressureBot | 1075 | Pression |
+| `chameleon` | ChameleonBot | 1125 | Adaptatif |
+| `positional` | PositionalBot | 1200 | Positionnel |
+| `lookahead` | LookaheadBot | 1300 | Anticipation |
+| `minimax` | MinimaxBot | 1400 | Recherche |
+
+Afficher l'échelle depuis le CLI :
+
+```bash
+bash scripts/chess.sh ratings
+```
+
+Les valeurs sont **provisoires** et pourront être recalibrées après accumulation de résultats réels.
+
+---
+
 Les bots fournis servent à la fois d'adversaires et d'exemples pédagogiques contrastés.
 
 ## RandomBot
@@ -68,7 +99,7 @@ Bot d'exemple combinant plusieurs couches :
 | GreedyBot | très important | faible | peu considéré | non | non |
 | CautiousBot | important | forte | faible | oui | non |
 | BerserkerBot | important | secondaire | élevé | oui | non |
-| SolidPlannerBot | secondaire pour l'instant | forte | faible à moyen | oui | Londres / Scandinave |
+| SolidPlannerBot | secondaire | forte | faible à moyen | oui | Londres / Scandinave |
 | GuardianBot | secondaire | très forte | faible | oui | non |
 | TacticalBot | important | moyenne | moyen | oui | non |
 | PressureBot | indirect / contraintes | moyenne | moyen à élevé | oui | non |
@@ -76,16 +107,6 @@ Bot d'exemple combinant plusieurs couches :
 | PositionalBot | globale / heuristique | forte | faible à moyen | oui | non |
 | LookaheadBot | globale + réponse adverse | forte | faible à moyen | oui | non |
 | MinimaxBot | Minimax profondeur 3 | dépend de la recherche | configurable | non | non |
-
-## Prochaine cible
-
-`TacticalBot` exploitera ensuite :
-
-- pièce pendue ;
-- fourchette ;
-- clouage ;
-- enfilade ;
-- menace de mat.
 
 Une activité pédagogique utile consiste à donner la même position à plusieurs bots puis comparer la règle déclenchée, les candidats, leurs scores et le coup final.
 
@@ -121,17 +142,18 @@ Il illustre la différence entre une heuristique locale et une décision fondée
 TacticalBot
 ```
 
-TacticalBot utilise actuellement :
+TacticalBot utilise notamment :
 
 1. mat en un ;
-2. sauvetage d'une pièce pendue ;
-3. capture d'une pièce pendue ;
-4. création d'une fourchette ;
-5. capture évaluée par projection ;
-6. centre ;
-7. développement ;
-8. roque ;
-9. fallback.
+2. sortie d'échec et évitement du mat ;
+3. sauvetage et capture des pièces pendues ;
+4. double échec ;
+5. fourchette ;
+6. élimination d'un défenseur surchargé ;
+7. clouage et enfilade ;
+8. attaque à la découverte ;
+9. échecs et captures tactiques ;
+10. plans de centre, développement et roque.
 
 Le détecteur de fourchette simule tous les coups légaux et cherche une pièce qui, après déplacement, attaque au moins deux pièces adverses.
 
