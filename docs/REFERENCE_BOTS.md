@@ -8,18 +8,18 @@ Les bots de référence disposent maintenant d'une **échelle empirique interne*
 
 | Clé CLI | Bot | IRIS-Elo | Niveau |
 |---|---|---:|---|
-| `random` | RandomBot | 840 | Découverte |
-| `architect` | SolidPlannerBot | 886 | Planificateur |
-| `berserker` | BerserkerBot | 951 | Agressif |
-| `greedy` | GreedyBot | 955 | Matérialiste |
-| `pressure` | PressureBot | 962 | Pression |
-| `chameleon` | ChameleonBot | 997 | Adaptatif |
-| `positional` | PositionalBot | 1008 | Positionnel |
-| `cautious` | CautiousBot | 1024 | Prudent |
-| `tactical` | TacticalBot | 1038 | Tactique |
-| `guardian` | GuardianBot | 1057 | Défensif |
-| `minimax` | MinimaxBot | 1129 | Recherche |
-| `lookahead` | LookaheadBot | 1152 | Anticipation |
+| `random` | RandomBot | 1340 | Découverte |
+| `architect` | SolidPlannerBot | 1386 | Planificateur |
+| `berserker` | BerserkerBot | 1451 | Agressif |
+| `greedy` | GreedyBot | 1455 | Matérialiste |
+| `pressure` | PressureBot | 1462 | Pression |
+| `chameleon` | ChameleonBot | 1497 | Adaptatif |
+| `positional` | PositionalBot | 1508 | Positionnel |
+| `cautious` | CautiousBot | 1524 | Prudent |
+| `tactical` | TacticalBot | 1538 | Tactique |
+| `guardian` | GuardianBot | 1557 | Défensif |
+| `minimax` | MinimaxBot | 1629 | Recherche |
+| `lookahead` | LookaheadBot | 1652 | Anticipation |
 
 Afficher l'échelle depuis le CLI :
 
@@ -27,7 +27,7 @@ Afficher l'échelle depuis le CLI :
 bash scripts/chess.sh ratings
 ```
 
-Les valeurs affichées ci-dessus sont issues de la seconde campagne de calibration : 528 parties, 8 parties par paire, seed 20260927, K=24.
+Les écarts affichés ci-dessus sont issus de la seconde campagne de calibration : 528 parties, 8 parties par paire, seed 20260927, K=24. L'ensemble de l'échelle a ensuite été translaté de +500 afin de la centrer autour de 1500 ; cette translation ne modifie aucune probabilité Elo.
 
 Voir `docs/ELO_BENCHMARK.md`.
 
