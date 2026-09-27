@@ -61,6 +61,20 @@ public final class EloBenchmark {
         EloBenchmarkSettings settings,
         Consumer<EloMatchRecord> progress
     ) {
+        return run(
+            participants,
+            settings,
+            Map.of(),
+            progress
+        );
+    }
+
+    public EloBenchmarkResult run(
+        List<TournamentParticipant> participants,
+        EloBenchmarkSettings settings,
+        Map<String, Double> initialRatings,
+        Consumer<EloMatchRecord> progress
+    ) {
         Objects.requireNonNull(
             participants,
             "participants must not be null"
@@ -68,6 +82,10 @@ public final class EloBenchmark {
         Objects.requireNonNull(
             settings,
             "settings must not be null"
+        );
+        Objects.requireNonNull(
+            initialRatings,
+            "initialRatings must not be null"
         );
         Objects.requireNonNull(
             progress,
@@ -88,7 +106,8 @@ public final class EloBenchmark {
         Map<String, RatingState> states =
             initialStates(
                 roster,
-                settings.initialRating()
+                settings.initialRating(),
+                initialRatings
             );
 
         List<ScheduledGame> schedule =
@@ -311,7 +330,8 @@ public final class EloBenchmark {
     private static Map<String, RatingState>
         initialStates(
             List<TournamentParticipant> roster,
-            double initialRating
+            double initialRating,
+            Map<String, Double> initialRatings
         ) {
 
         Map<String, RatingState> states =
@@ -324,7 +344,10 @@ public final class EloBenchmark {
                 participant.key(),
                 new RatingState(
                     participant,
-                    initialRating
+                    initialRatings.getOrDefault(
+                        participant.key(),
+                        initialRating
+                    )
                 )
             );
         }
